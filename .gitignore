@@ -33,3 +33,4 @@
 
 .vscode/
 train
+mnist_csv/
