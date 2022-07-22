@@ -1,10 +1,12 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include <vector>
+
 class Matrix {
 private:
     unsigned int x_size, y_size;
-    double **data;
+    float **data;
 
 public:
     /**
@@ -32,7 +34,14 @@ public:
      * @param y Selected column of matrix
      * @param value Value to be set on given coordinate
      */
-    void set_matrix(unsigned int x, unsigned int y, double value);
+    void set_matrix(unsigned int x, unsigned int y, float value);
+
+    /**
+     * @brief Initialize the entire matrix using values from vector
+     * 
+     * @param vector Vector from which the new matrix will be initialized
+     */
+    void set_matrix_from_vector(std::vector<float> vector);
 
     /**
      * @brief Overload + operator to enable matrix + matrix operation
@@ -46,7 +55,7 @@ public:
      * 
      * @return Matrix addition result 
      */
-    Matrix operator+(const double&);
+    Matrix operator+(const float&);
 
     /**
      * @brief Overload - operator to enable matrix - matrix operation
@@ -60,7 +69,7 @@ public:
      * 
      * @return Matrix subtract result 
      */
-    Matrix operator-(const double&);
+    Matrix operator-(const float&);
 
     /**
      * @brief Overload * operator to enable matrix * matrix operation
@@ -74,7 +83,7 @@ public:
      * 
      * @return Matrix multiplication result 
      */
-    Matrix operator*(const double&);
+    Matrix operator*(const float&);
 };
 
 #endif
