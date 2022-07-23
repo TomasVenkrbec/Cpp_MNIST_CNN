@@ -1,6 +1,8 @@
 #include <iostream>
+#include <vector>
 #include "../layer.hpp"
 #include "../neuron.hpp"
+#include "../matrix.hpp"
 #include "convlayer.hpp"
 
 using namespace std;
@@ -30,6 +32,64 @@ void ConvLayer::calculate_output_shape(unsigned int input_shape[3]) {
     this->output_shape[2] = this->kernel_count;
 }
 
-void ConvLayer::forward() {
-    cout << "ConvLayer::forward()" << endl;
+Matrix* ConvLayer::convolve(Matrix* data) {
+    // Create matrix for result, based on pre-calculated output shape, which already counts with padding
+    Matrix* result_matrix = new Matrix(this->output_shape[0], this->output_shape[1]);
+
+    // Get kernel from neurons
+    vector<float> kernel_vector;
+    for (auto a: this->get_neurons()) {
+        kernel_vector.push_back(a.weights[0]); // CNN neurons have only one weight
+    }
+    Matrix *kernel = new Matrix(this->kernel_size, this->kernel_size);
+    kernel->set_matrix_from_vector(kernel_vector);
+
+    int start_x, start_y;
+    if (this->padding) {
+        start_x = start_y = -(this->kernel_size - 1); // Add padding
+    }
+    else {
+        start_x = start_y = 0; // Start at beginning
+    }
+
+    for (int i = 0; i < this->output_shape[0]; i++) { // Iterate accordingly to pre-calculated output shape
+        for (int j = 0; j < this->output_shape[1]; j++) { 
+            float result = data->convolve(kernel, i + start_x, j + start_y);
+            result_matrix->set_matrix(i, j, result);
+        }
+    }
+
+    return result_matrix;
+}
+
+void ConvLayer::forward(unsigned int input_shape[4], vector<vector<Matrix*>> data) {
+    // Data structures for results
+    vector<vector<Matrix*>> res_samples;
+    vector<Matrix*> res_sample;
+    Matrix* res_channel;
+
+    for (unsigned int i = 0; i < data.size(); i++) { // Iterate over samples from batch
+        for (unsigned int j = 0; j < data[i].size(); j++) { // Iterate over channels from sample
+            res_channel = this->convolve(data[i][j]); // Convolve over channel and save it
+
+            if (res_channel->get_x_size() != this->output_shape[0] || res_channel->get_y_size() != this->output_shape[1]) {
+                cerr << "ERROR: Shape of output channel (" << res_channel->get_x_size() << "," << res_channel->get_y_size() << ") doesn't match the expected output shape (" << this->output_shape[0] << "," << this->output_shape[1] << ")" << endl;
+                throw;
+            }
+
+            res_sample.push_back(res_channel); 
+        }
+
+        if (res_sample.size() != this->output_shape[2]) {
+            cerr << "ERROR: Channel count of outputs (" << res_sample.size() << ") doesn't match channel count of inputs (" << input_shape[2] << ")" << endl;
+        }
+
+        res_samples.push_back(res_sample); // Save the result
+        res_sample.clear();
+    }
+
+    if (res_samples.size() != input_shape[0]) {
+        cerr << "ERROR: Batch size of outputs (" << res_samples.size() << ") doesn't match batch size of inputs (" << input_shape[0] << ")" << endl;
+        throw;
+    }
 }

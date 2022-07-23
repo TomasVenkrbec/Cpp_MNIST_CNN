@@ -70,6 +70,13 @@ public:
     Layer* get_next_layer();
 
     /**
+     * @brief Get neurons from layer
+     * 
+     * @return Vector of neurons from layer 
+     */
+    std::vector<Neuron> get_neurons();
+
+    /**
      * @brief Perform forward pass
      */
     virtual void forward();

@@ -19,6 +19,22 @@ Matrix::~Matrix() {
     delete this->data;
 }
 
+unsigned int Matrix::get_x_size() {
+    return this->x_size;
+}
+
+unsigned int Matrix::get_y_size() {
+    return this->y_size;
+}
+
+float Matrix::at(unsigned int x, unsigned int y) {
+    if (x > this->x_size || y > this->y_size) {
+        cerr << "ERROR: Attempting to access out-of-bounds data (" << x << "," << y << ") from matrix (" << this->x_size << "," << this->y_size << ")." << endl;
+        throw;
+    }
+    return this->data[x][y];
+}
+
 void Matrix::print_matrix() {
     for (unsigned int i = 0; i < this->x_size; i++) { // Rows
         for (unsigned int j = 0; j < this->y_size; j++) { // Columns
@@ -53,6 +69,24 @@ void Matrix::set_matrix_from_vector(std::vector<float> vector){
             this->data[i][j] = vector[i * this->x_size + j]; 
         }
     }
+}
+
+float Matrix::convolve(Matrix* kernel, int start_x, int start_y) {
+    float result = 0.0;
+
+    for (unsigned int i = 0; i < kernel->get_x_size(); i++) { // Iterate over x coordinates of kernel
+        for (unsigned int j = 0; j < kernel->get_y_size(); j++) { // Iterate over y coordinates of kernel
+            // Out-of-bounds coordinates are not an error due to padding, but they're simply ignored
+            if (i + start_x < 0 || i + start_x >= this->get_x_size() || j + start_y < 0 || j + start_y >= this->get_y_size()) {
+                continue;
+            }
+
+            // Calculate kernel * data on valid position, add to result
+            result += kernel->at(i, j) * this->data[i + start_x][j + start_y];
+        }
+    }
+
+    return result;
 }
 
 Matrix Matrix::operator+(const float& value) {

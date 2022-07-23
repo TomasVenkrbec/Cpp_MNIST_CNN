@@ -21,11 +21,44 @@ public:
      * @brief Matrix object destructor
      */
     ~Matrix();
+    
+    /**
+     * @brief Get the x size of matrix
+     * 
+     * @return x size of matrix
+     */
+    unsigned int get_x_size();
+
+    /**
+     * @brief Get the y size of matrix
+     * 
+     * @return y size of matrix
+     */
+    unsigned int get_y_size();
+
+    /**
+     * @brief Get value at given coordinates
+     * 
+     * @param x x coordinate
+     * @param y y coordinate
+     * @return Value on given coordinates
+     */
+    float at(unsigned int x, unsigned int y);
 
     /**
      * @brief Prints the matrix to console
      */
     void print_matrix();
+
+    /**
+     * @brief Perform one step of convolution on matrix with selected kernel on given coordinates
+     * 
+     * @param kernel Convolutional kernel
+     * @param start_x x coordinate where start of kernel matrix will be (negative coordinates are enabled due to padding, but not counted)
+     * @param start_y y coordinate where start of kernel matrix will be (negative coordinates are enabled due to padding, but not counted)
+     * @return Resulting value
+     */
+    float convolve(Matrix* kernel, int start_x, int start_y);
 
     /**
      * @brief Set given coordinate of the matrix to selected value

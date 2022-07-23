@@ -39,6 +39,10 @@ Layer* Layer::get_prev_layer() {
     return this->prev_layer;
 }
 
+std::vector<Neuron> Layer::get_neurons() {
+    return this->neurons;
+}
+
 void Layer::forward() {
     // Implemented inside derived classes
 }

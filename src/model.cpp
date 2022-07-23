@@ -50,6 +50,7 @@ void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer) {
         throw;
     }
 
+    // Pre-calculate output shapes for all layers
     Layer* cur_layer = this->input_layer;
     unsigned int* output_shape = input_shape; // Pretend that the sample is output from non-existent layer
     while (cur_layer != NULL) { // Go through the network and calculate output shapes
@@ -57,4 +58,6 @@ void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer) {
         output_shape = cur_layer->get_output_shape();
         cur_layer = cur_layer->get_next_layer();
     }
+
+    // Initialize neurons in all layers
 }
