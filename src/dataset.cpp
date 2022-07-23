@@ -11,6 +11,7 @@ using namespace std;
 #define MNIST_TRAIN_SIZE 60000
 #define MNIST_TEST_SIZE 10000
 #define MNIST_RESOLUTION 28
+#define MNIST_CHANNELS 1
 #define MNIST_MAX_LABEL 9
 
 void DatasetLoader::add_train_sample(DataSample* sample) {
@@ -21,7 +22,31 @@ void DatasetLoader::add_test_sample(DataSample* sample) {
     this->test_samples.push_back(*sample);
 }
 
-DataSample::DataSample(unsigned int label, Matrix* data) {
+unsigned int DatasetLoader::get_resolution() {
+    return this->resolution;
+}
+
+void DatasetLoader::set_resolution(unsigned int resolution) {
+    this->resolution = resolution;
+}
+
+unsigned int DatasetLoader::get_max_label() {
+    return this->max_label;
+}
+
+void DatasetLoader::set_max_label(unsigned int max_label) {
+    this->max_label = max_label;
+}
+
+unsigned int DatasetLoader::get_channels() {
+    return this->channels;
+}
+
+void DatasetLoader::set_channels(unsigned int channels) {
+    this->channels = channels;
+}
+
+DataSample::DataSample(unsigned int label, vector<Matrix*> data) {
     this->label = label;
     this->data = data;
 }
@@ -30,7 +55,8 @@ DataSample::~DataSample() {
 
 }
 
-DataSample* parse_csv_line(string line, unsigned int max_label, unsigned int x_size, unsigned int y_size) {
+DataSample* parse_csv_line(string line, unsigned int max_label, unsigned int x_size, unsigned int y_size, unsigned int channels) {
+    vector<vector<float>> data_channels;
     vector<float> data_vector;
     unsigned int label;
 
@@ -49,14 +75,28 @@ DataSample* parse_csv_line(string line, unsigned int max_label, unsigned int x_s
     // Get data from line
     while(getline(line_ss, num, ',')) {
         data_vector.push_back(stof(num));
+        if (data_vector.size() == x_size * y_size) { // Gathered complete channel
+            data_channels.push_back(data_vector);
+            data_vector.clear();
+        }
     }
     
+    // Check if number of channels loaded is correct
+    if (data_channels.size() != channels) {
+        cerr << "ERROR: The number of channels in data is incorrect." << endl;
+        throw data_channels.size();
+    }
+
     // Initialize data matrix
-    Matrix *data_matrix = new Matrix(x_size, y_size);
-    data_matrix->set_matrix_from_vector(data_vector);
+    vector<Matrix*> data_matrix_vector;
+    for (unsigned i = 0; i < channels; i++) {
+        Matrix* data_matrix = new Matrix(x_size, y_size);
+        data_matrix->set_matrix_from_vector(data_channels[i]); // Correct resolution of data is checked within this function
+        data_matrix_vector.push_back(data_matrix);
+    }
 
     // Create sample object and return it
-    return new DataSample(label, data_matrix);
+    return new DataSample(label, data_matrix_vector);
 }
 
 void load_mnist_file(DatasetLoader* dataset, string name) {
@@ -76,7 +116,7 @@ void load_mnist_file(DatasetLoader* dataset, string name) {
 
         try {
             // Parse line
-            DataSample* sample = parse_csv_line(line, MNIST_MAX_LABEL, MNIST_RESOLUTION, MNIST_RESOLUTION);
+            DataSample* sample = parse_csv_line(line, MNIST_MAX_LABEL, MNIST_RESOLUTION, MNIST_RESOLUTION, MNIST_CHANNELS);
 
             // Add sample to dataset
             if (name == "train") {
@@ -97,6 +137,9 @@ void load_mnist_file(DatasetLoader* dataset, string name) {
 
 DatasetLoader* get_mnist_dataset() {
     DatasetLoader* dataset = new DatasetLoader;
+    dataset->set_resolution(MNIST_RESOLUTION);
+    dataset->set_max_label(MNIST_MAX_LABEL);
+    dataset->set_channels(MNIST_CHANNELS);
     load_mnist_file(dataset, "train"); // Load training data
     load_mnist_file(dataset, "test"); // Load test data
 

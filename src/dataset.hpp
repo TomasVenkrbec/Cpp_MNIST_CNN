@@ -8,7 +8,7 @@
 class DataSample {
 private:
     unsigned int label;
-    Matrix *data;
+    std::vector <Matrix*> data; // Vector of matrices (channels)
 
 public:
     /**
@@ -16,7 +16,7 @@ public:
      * @param label Label of the sample
      * @param data Matrix containing the data of the sample
      */
-    DataSample(unsigned int label, Matrix* data);
+    DataSample(unsigned int label, std::vector <Matrix*> data);
 
     /**
      * @brief DataSample object destructor
@@ -28,8 +28,53 @@ class DatasetLoader {
 private:
     std::vector<DataSample> train_samples;
     std::vector<DataSample> test_samples;
+    unsigned int resolution;
+    unsigned int max_label;
+    unsigned int channels;
 
 public:
+    /**
+     * @brief Get resolution of samples
+     * 
+     * @return Resolution of samples
+     */
+    unsigned int get_resolution();
+
+    /**
+     * @brief Set resolution of samples
+     * 
+     * @param resolution Resolution of samples
+     */
+    void set_resolution(unsigned int resolution);
+
+    /**
+     * @brief Get number of channels in samples
+     * 
+     * @return Number of channels
+     */
+    unsigned int get_channels();
+
+    /**
+     * @brief Set number of channels in samples
+     * 
+     * @param resolution Number of channels
+     */
+    void set_channels(unsigned int channels);
+
+    /**
+     * @brief Get the max value of label
+     * 
+     * @return Maximal value of label
+     */
+    unsigned int get_max_label();
+
+    /**
+     * @brief Set the max value of label
+     * 
+     * @param max_label Maximal value of label
+     */
+    void set_max_label(unsigned int max_label);
+
     /**
      * @brief Add a new sample to train dataset
      * 
@@ -69,7 +114,7 @@ void load_mnist_file(DatasetLoader* dataset, std::string name);
  * @param y_size Number of cols in image data
  * @return DataSample object if the data is correct, throws error otherwise
  */
-DataSample* parse_csv_line(std::string line, unsigned int max_label, unsigned int x_size, unsigned int y_size);
+DataSample* parse_csv_line(std::string line, unsigned int max_label, unsigned int x_size, unsigned int y_size, unsigned int channels);
 
 /**
  * @brief Get the dataset loader object for selected dataset

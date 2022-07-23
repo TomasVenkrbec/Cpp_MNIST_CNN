@@ -36,3 +36,5 @@ Layer* Layer::get_prev_layer() {
 }
 
 void Layer::forward() {}
+
+void Layer::calculate_output_shape(unsigned int input_shape[3]) {}

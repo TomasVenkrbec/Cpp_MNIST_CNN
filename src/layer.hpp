@@ -65,6 +65,13 @@ public:
      * @brief Perform forward pass
      */
     virtual void forward();
+
+    /**
+     * @brief Calculate output shape of layer
+     * 
+     * @param input_shape Input shape of layer ([x,y,channels])
+     */
+    virtual void calculate_output_shape(unsigned int input_shape[3]);
 };
 
 #endif
