@@ -1,13 +1,15 @@
 #ifndef LAYER_H
 #define LAYER_H
 
-#include "neuron.hpp"
 #include <string>
 #include <vector>
+#include "neuron.hpp"
+#include "activation.hpp"
 
 class Layer {
 protected:
     std::vector<Neuron> neurons;
+    Activation *activation = NULL;
     Layer* prev_layer = NULL;
     Layer* next_layer = NULL;
     unsigned int output_shape[3];
@@ -40,6 +42,13 @@ public:
      * @return Output shape
      */
     unsigned int* get_output_shape();
+
+    /**
+     * @brief Get the activation function of layer
+     * 
+     * @return Activation function
+     */
+    Activation* get_activation();
 
     /**
      * @brief Add the pointer to next layer

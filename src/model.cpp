@@ -32,6 +32,9 @@ void Model::print_model() {
     while (cur_layer != NULL) {
         cout << "Layer " << ++layer_count << ": " << cur_layer->name << endl;
         cout << "\t Neuron count: " << cur_layer->get_neuron_count() << endl;
+        if (cur_layer->get_activation() != NULL) {
+            cout << "\t Activation: " << cur_layer->get_activation()->name << endl;
+        }
         cout << "\t Output shape: (" << cur_layer->get_output_shape()[0] << "," << cur_layer->get_output_shape()[1] << "," << cur_layer->get_output_shape()[2] << ")" << endl;
         cur_layer = cur_layer->get_next_layer();
     }

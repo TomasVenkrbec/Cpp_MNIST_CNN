@@ -3,15 +3,17 @@
 #include "../layer.hpp"
 #include "../neuron.hpp"
 #include "../matrix.hpp"
+#include "../activation.hpp"
 #include "convlayer.hpp"
 
 using namespace std;
 
-ConvLayer::ConvLayer(unsigned int kernel_size, unsigned int kernel_count, bool padding) : Layer(kernel_size * kernel_size * kernel_count) {
+ConvLayer::ConvLayer(unsigned int kernel_size, unsigned int kernel_count, Activation *activation, bool padding) : Layer(kernel_size * kernel_size * kernel_count) {
     this->name = "ConvLayer";
     this->kernel_count = kernel_count;
     this->kernel_size = kernel_size;
     this->padding = padding;
+    this->activation = activation;
 }
 
 void ConvLayer::calculate_output_shape(unsigned int input_shape[3]) {

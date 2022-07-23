@@ -43,6 +43,10 @@ std::vector<Neuron> Layer::get_neurons() {
     return this->neurons;
 }
 
+Activation* Layer::get_activation() {
+    return this->activation;
+}
+
 void Layer::forward() {
     // Implemented inside derived classes
 }

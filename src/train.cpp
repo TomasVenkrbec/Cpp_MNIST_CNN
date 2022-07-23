@@ -4,8 +4,11 @@
 #include "layers/denselayer.hpp"
 #include "layers/convlayer.hpp"
 #include "layers/avgpoollayer.hpp"
+#include "layers/flattenlayer.hpp"
 #include "losses/categoricalcrossentropy.hpp"
 #include "optimizers/adam.hpp"
+#include "activations/relu.hpp"
+#include "activations/softmax.hpp"
 #include "model.hpp"
 
 using namespace std;
@@ -13,16 +16,17 @@ using namespace std;
 int main() {
     // Initialize network
     Model model;
-    model.add_layer(new ConvLayer(3, 4)); // 28x28 - padding
-    model.add_layer(new ConvLayer(3, 8)); // 28x28 - padding
+    model.add_layer(new ConvLayer(3, 4, new ReLU())); // 28x28 - padding
+    model.add_layer(new ConvLayer(3, 8, new ReLU())); // 28x28 - padding
     model.add_layer(new AvgPoolLayer(2)); // Downsample to 14x14
-    model.add_layer(new ConvLayer(3, 16)); // 12x12 - no padding
-    model.add_layer(new ConvLayer(3, 32)); // 12x12 - padding
+    model.add_layer(new ConvLayer(3, 16, new ReLU())); // 12x12 - no padding
+    model.add_layer(new ConvLayer(3, 32, new ReLU())); // 12x12 - padding
     model.add_layer(new AvgPoolLayer(2)); // Downsample to 6x6
-    model.add_layer(new ConvLayer(3, 32)); // 6x6 - padding
-    model.add_layer(new DenseLayer(128));
-    model.add_layer(new DenseLayer(32));
-    model.add_layer(new DenseLayer(10));
+    model.add_layer(new ConvLayer(3, 32, new ReLU())); // 6x6 - padding
+    model.add_layer(new FlattenLayer());
+    model.add_layer(new DenseLayer(128, new ReLU()));
+    model.add_layer(new DenseLayer(32, new ReLU()));
+    model.add_layer(new DenseLayer(10, new Softmax()));
     
     // Load data
     DatasetLoader *dataset = get_dataset_loader("mnist");

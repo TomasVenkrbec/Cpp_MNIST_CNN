@@ -4,6 +4,7 @@
 #include <vector>
 #include "../layer.hpp"
 #include "../matrix.hpp"
+#include "../activation.hpp"
 
 class ConvLayer: public Layer {
 private:
@@ -18,7 +19,7 @@ public:
      * @param kernel_size Size of kernel (kernel_size * kernel_size)
      * @param kernel_count Kernel (filter) count in layer
      */
-    ConvLayer(unsigned int kernel_size, unsigned int kernel_count, bool padding = true);
+    ConvLayer(unsigned int kernel_size, unsigned int kernel_count, Activation *activation, bool padding = true);
     
     /**
      * @brief Perform convolution over given data
