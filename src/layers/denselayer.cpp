@@ -12,3 +12,9 @@ DenseLayer::DenseLayer(unsigned int neuron_count) : Layer(neuron_count) {
 void DenseLayer::forward() {
     cout << "DenseLayer::forward()" << endl;
 }
+
+void DenseLayer::calculate_output_shape(unsigned int input_shape[3]) {
+    this->output_shape[0] = this->get_neuron_count();
+    this->output_shape[1] = 1;
+    this->output_shape[2] = 1;
+}

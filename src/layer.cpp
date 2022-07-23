@@ -19,6 +19,10 @@ unsigned int Layer::get_neuron_count() {
     return this->neurons.size();
 }
 
+unsigned int* Layer::get_output_shape() {
+    return this->output_shape;
+}
+
 void Layer::add_next_layer(Layer* layer) {
     this->next_layer = layer;
 }
@@ -35,6 +39,10 @@ Layer* Layer::get_prev_layer() {
     return this->prev_layer;
 }
 
-void Layer::forward() {}
+void Layer::forward() {
+    // Implemented inside derived classes
+}
 
-void Layer::calculate_output_shape(unsigned int input_shape[3]) {}
+void Layer::calculate_output_shape(unsigned int input_shape[3]) {
+    // Implemented inside derived classes    
+}

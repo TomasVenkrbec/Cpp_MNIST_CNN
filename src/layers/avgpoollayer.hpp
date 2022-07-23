@@ -6,7 +6,6 @@
 class AvgPoolLayer: public Layer {
 private:
     unsigned int kernel_size;
-    unsigned int kernel_count;
 
 public:
     /**
@@ -20,6 +19,13 @@ public:
      * @brief Forward propagation function
      */
     void forward();
+
+    /**
+     * @brief Calculate output shape of layer
+     * 
+     * @param input_shape Input shape ([x,y,channels])
+     */
+    void calculate_output_shape(unsigned int input_shape[3]); 
 };
 
 #endif

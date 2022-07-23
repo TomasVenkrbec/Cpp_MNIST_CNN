@@ -10,6 +10,7 @@ protected:
     std::vector<Neuron> neurons;
     Layer* prev_layer = NULL;
     Layer* next_layer = NULL;
+    unsigned int output_shape[3];
 
 public:
     std::string name;
@@ -32,6 +33,13 @@ public:
      * @return Layer neuron count
      */
     unsigned int get_neuron_count();
+
+    /**
+     * @brief Get output shape of layer
+     * 
+     * @return Output shape
+     */
+    unsigned int* get_output_shape();
 
     /**
      * @brief Add the pointer to next layer

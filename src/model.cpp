@@ -11,7 +11,7 @@ void Model::add_layer(Layer* layer) {
     else {
         Layer* cur_layer = this->input_layer;
 
-        while(cur_layer->get_next_layer() != NULL) {
+        while (cur_layer->get_next_layer() != NULL) {
             cur_layer = cur_layer->get_next_layer();
         }
         cur_layer->add_next_layer(layer);
@@ -29,8 +29,10 @@ void Model::print_model() {
     Layer *cur_layer = this->input_layer;
     cout << "Network structure:" << endl;
     cout << "Input size: (" << this->dataset->get_resolution() << "," << this->dataset->get_resolution() << "," << this->dataset->get_channels() << ")" << endl; 
-    while(cur_layer != NULL) {
-        cout << "Layer " << ++layer_count << ": " << cur_layer->name << " - " << cur_layer->get_neuron_count() << " neurons. " << endl;
+    while (cur_layer != NULL) {
+        cout << "Layer " << ++layer_count << ": " << cur_layer->name << endl;
+        cout << "\t Neuron count: " << cur_layer->get_neuron_count() << endl;
+        cout << "\t Output shape: (" << cur_layer->get_output_shape()[0] << "," << cur_layer->get_output_shape()[1] << "," << cur_layer->get_output_shape()[2] << ")" << endl;
         cur_layer = cur_layer->get_next_layer();
     }
 }
@@ -41,5 +43,18 @@ void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer) {
     this->optimizer = optimizer;
 
     // Setup all layers to have their correct inputs and outputs
+    unsigned int input_shape[3] = {this->dataset->get_resolution(), this->dataset->get_resolution(), this->dataset->get_channels()};
 
+    if (this->input_layer == NULL) {
+        cerr << "ERROR: Can't compile model without any layers." << endl;
+        throw;
+    }
+
+    Layer* cur_layer = this->input_layer;
+    unsigned int* output_shape = input_shape; // Pretend that the sample is output from non-existent layer
+    while (cur_layer != NULL) { // Go through the network and calculate output shapes
+        cur_layer->calculate_output_shape(output_shape);
+        output_shape = cur_layer->get_output_shape();
+        cur_layer = cur_layer->get_next_layer();
+    }
 }

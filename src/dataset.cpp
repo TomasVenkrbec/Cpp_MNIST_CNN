@@ -73,7 +73,7 @@ DataSample* parse_csv_line(string line, unsigned int max_label, unsigned int x_s
     }
 
     // Get data from line
-    while(getline(line_ss, num, ',')) {
+    while (getline(line_ss, num, ',')) {
         data_vector.push_back(stof(num));
         if (data_vector.size() == x_size * y_size) { // Gathered complete channel
             data_channels.push_back(data_vector);
