@@ -12,14 +12,14 @@ private:
 
 public:
     /**
-     * @brief Constructor
+     * @brief DataSample object constructor
      * @param label Label of the sample
      * @param data Matrix containing the data of the sample
      */
     DataSample(unsigned int label, Matrix* data);
 
     /**
-     * @brief Destructor
+     * @brief DataSample object destructor
      */
     ~DataSample();
 };

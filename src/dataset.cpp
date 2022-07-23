@@ -48,7 +48,7 @@ DataSample* parse_csv_line(string line, unsigned int max_label, unsigned int x_s
 
     // Get data from line
     while(getline(line_ss, num, ',')) {
-        data_vector.push_back(stod(num));
+        data_vector.push_back(stof(num));
     }
     
     // Initialize data matrix
