@@ -1,21 +1,20 @@
-#ifndef CONVLAYER_H
-#define CONVLAYER_H
+#ifndef AVGPOOLLAYER_H
+#define AVGPOOLLAYER_H
 
 #include "../layer.hpp"
 
-class ConvLayer: public Layer {
+class AvgPoolLayer: public Layer {
 private:
     unsigned int kernel_size;
     unsigned int kernel_count;
 
 public:
     /**
-     * @brief Construct a ConvLayer object with selected kernel size and count
+     * @brief Construct a AvgPoolLayer object with selected kernel size
      * 
      * @param kernel_size Size of kernel (kernel_size * kernel_size)
-     * @param kernel_count Kernel (filter) count in layer
      */
-    ConvLayer(unsigned int kernel_size, unsigned int kernel_count);
+    AvgPoolLayer(unsigned int kernel_size);
 
     /**
      * @brief Forward propagation function

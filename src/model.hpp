@@ -5,13 +5,15 @@
 #include <memory>
 #include "layer.hpp"
 #include "dataset.hpp"
+#include "optimizer.hpp"
+#include "loss.hpp"
 
 class Model {
 private:
     Layer* input_layer = NULL;
-    DatasetLoader dataset;
-    // TODO: Add optimizer
-    // TODO: Add loss
+    DatasetLoader* dataset;
+    Optimizer* optimizer;
+    Loss* loss;
 
 public:
     /**
@@ -26,7 +28,7 @@ public:
      */
     void print_model();
     
-    void compile(); // Dataset, optimizer, loss, callbacks
+    void compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer); // TODO: Add callbacks
 };
 
 #endif
