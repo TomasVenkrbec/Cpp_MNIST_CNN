@@ -1,11 +1,10 @@
 #include <iostream>
-#include "layers.hpp"
+#include "layer.hpp"
 #include "neuron.hpp"
 
 using namespace std;
 
 Layer::Layer(unsigned int neuron_count) {
-    cout << "Initializing layer: " << this->name << endl;
     for (unsigned int i = 0; i < neuron_count; i++) {
         Neuron *neuron = new Neuron;
         this->neurons.push_back(*neuron);
@@ -20,6 +19,20 @@ unsigned int Layer::get_neuron_count() {
     return this->neurons.size();
 }
 
-ConvLayer::ConvLayer(unsigned int kernel_size, unsigned int kernel_count) : Layer(kernel_size * kernel_size * kernel_count) {
-
+void Layer::add_next_layer(Layer* layer) {
+    this->next_layer = layer;
 }
+
+void Layer::add_prev_layer(Layer* layer) {
+    this->prev_layer = layer;
+}
+
+Layer* Layer::get_next_layer() {
+    return this->next_layer;
+}
+
+Layer* Layer::get_prev_layer() {
+    return this->prev_layer;
+}
+
+void Layer::forward() {}
