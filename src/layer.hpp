@@ -14,6 +14,7 @@ protected:
     Layer* prev_layer = NULL;
     Layer* next_layer = NULL;
     unsigned int output_shape[3];
+    unsigned int trainable_weights_count = 0;
     bool process_by_channel = true; // true - process image channel by channel, false - process image sample by sample
 
 public:
@@ -37,6 +38,13 @@ public:
      * @return Layer neuron count
      */
     unsigned int get_neuron_count();
+
+    /**
+     * @brief Get the count of trainable weights in layer
+     * 
+     * @return Trainable weights count
+     */
+    unsigned int get_trainable_weights_count();
 
     /**
      * @brief Get output shape of layer
@@ -118,6 +126,11 @@ public:
      * @param input_shape Input shape of layer ([x,y,channels])
      */
     virtual void calculate_output_shape(unsigned int input_shape[3]);
+
+    /**
+     * @brief Initialize neurons of layer
+     */
+    virtual void initialize_neurons();
 };
 
 #endif

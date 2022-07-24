@@ -21,6 +21,10 @@ unsigned int Layer::get_neuron_count() {
     return this->neurons.size();
 }
 
+ unsigned int Layer::get_trainable_weights_count() {
+    return this->trainable_weights_count;
+ }
+
 unsigned int* Layer::get_output_shape() {
     return this->output_shape;
 }
@@ -91,15 +95,24 @@ vector<vector<Matrix*>> Layer::forward(unsigned int input_shape[4], vector<vecto
 
 Matrix* Layer::process_channel(Matrix* channel) {
     // Implemented inside derived classes
-    throw "Method not implemented in derived class";
+    cerr << "ERROR: Method not implemented in derived class" << endl;
+    throw;
 }
 
 vector<Matrix*> Layer::process_sample(vector<Matrix*> sample) {
     // Implemented inside derived classes
-    throw "Method not implemented in derived class";
+    cerr << "ERROR: Method not implemented in derived class" << endl;
+    throw;
 }
 
 void Layer::calculate_output_shape(unsigned int input_shape[3]) {
     // Implemented inside derived classes    
-    throw "Method not implemented in derived class";
+    cerr << "ERROR: Method not implemented in derived class" << endl;
+    throw;
+}
+
+void Layer::initialize_neurons() {
+    // Implemented inside derived classes    
+    cerr << "ERROR: Method not implemented in derived class" << endl;
+    throw;
 }

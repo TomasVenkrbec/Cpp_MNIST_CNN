@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <random>
 #include "../layer.hpp"
 #include "../neuron.hpp"
 #include "../matrix.hpp"
@@ -8,8 +9,8 @@
 
 using namespace std;
 
-Conv::Conv(unsigned int kernel_size, unsigned int kernel_count, Activation *activation, bool padding) : Layer(kernel_size * kernel_size * kernel_count) {
-    this->name = "Conv";
+Conv2D::Conv2D(unsigned int kernel_size, unsigned int kernel_count, Activation *activation, bool padding) : Layer(kernel_size * kernel_size * kernel_count) {
+    this->name = "Conv2D";
     this->kernel_count = kernel_count;
     this->kernel_size = kernel_size;
     this->padding = padding;
@@ -17,7 +18,7 @@ Conv::Conv(unsigned int kernel_size, unsigned int kernel_count, Activation *acti
     this->process_by_channel = true;
 }
 
-void Conv::calculate_output_shape(unsigned int input_shape[3]) {
+void Conv2D::calculate_output_shape(unsigned int input_shape[3]) {
     if (!padding && (input_shape[0] < this->kernel_size || input_shape[1] < this->kernel_size)) {
         cerr << "ERROR: Image size (" << input_shape[0] << "," << input_shape[1] << ") is smaller than kernel size (" << this->kernel_size << "," << this->kernel_size << ")." << endl;
         throw;
@@ -36,7 +37,7 @@ void Conv::calculate_output_shape(unsigned int input_shape[3]) {
     this->output_shape[2] = this->kernel_count;
 }
 
-Matrix* Conv::process_channel(Matrix* data) {
+Matrix* Conv2D::process_channel(Matrix* data) {
     // Create matrix for result, based on pre-calculated output shape, which already counts with padding
     Matrix* result_matrix = new Matrix(this->output_shape[0], this->output_shape[1]);
 
@@ -58,10 +59,34 @@ Matrix* Conv::process_channel(Matrix* data) {
 
     for (int i = 0; i < this->output_shape[0]; i++) { // Iterate accordingly to pre-calculated output shape
         for (int j = 0; j < this->output_shape[1]; j++) { 
-            float result = data->convolve(kernel, i + start_x, j + start_y);
-            result_matrix->set_matrix(i, j, result);
+            float result = data->convolve(kernel, i + start_x, j + start_y); // Get result of convolution
+            result = this->activation->call(result); // Perform call of activation function
+            result_matrix->set_matrix(i, j, result); // Save the value
         }
     }
 
     return result_matrix;
+}
+
+void Conv2D::initialize_neurons() {
+    this->trainable_weights_count = 0; // Reset the counter of trainable weights
+
+    // Weight initializer - normal distribution with mean = 0 and stddev = 1
+    normal_distribution<float> normal(0.0, 1.0);
+    random_device rd;
+    mt19937 gen(rd()); // Randomizer
+
+    for (unsigned int i = 0; i < this->neurons.size(); i++) { // Iterate over neurons from current layer
+        // Since there's one bias per kernel, the first neuron will contain the bias for entire kernel
+        if (i % this->kernel_size == 0) {
+            // Initialize bias randomly
+            this->neurons[i]->bias = normal(gen);
+            this->trainable_weights_count++;
+        }
+
+        // The number of kernel weights does not depend on previous layer - one weight per neuron
+        this->neurons[i]->weights.push_back(normal(gen)); // Initialize randomly
+        this->neurons[i]->weights_d.push_back(0.0); // Default value
+        this->trainable_weights_count++;
+    }
 }

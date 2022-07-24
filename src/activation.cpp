@@ -1,4 +1,7 @@
+#include <iostream>
 #include "activation.hpp"
+
+using namespace std;
 
 Activation::Activation() {
 
@@ -6,5 +9,6 @@ Activation::Activation() {
 
 float Activation::call(float u) {
     // Implemented inside derivated functions
-    throw "Method not implemented in derived class";
+    cerr << "ERROR: Method not implemented in derived class" << endl;
+    throw;
 }

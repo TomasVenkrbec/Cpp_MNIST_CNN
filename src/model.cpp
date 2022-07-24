@@ -24,20 +24,26 @@ void Model::print_model() {
     cout << "Loss: " << this->loss->name << endl;
     cout << "Optimizer: " << this->optimizer->name << endl << endl;
 
-
     unsigned int layer_count = 0;
+    unsigned int trainable_weights_count = 0;
     Layer *cur_layer = this->input_layer;
     cout << "Network structure:" << endl;
     cout << "Input size: (" << this->dataset->get_resolution() << "," << this->dataset->get_resolution() << "," << this->dataset->get_channels() << ")" << endl; 
     while (cur_layer != NULL) {
         cout << "Layer " << ++layer_count << ": " << cur_layer->name << endl;
-        cout << "\t Neuron count: " << cur_layer->get_neuron_count() << endl;
+        if (cur_layer->get_neuron_count() > 0) {
+            cout << "\t Neuron count: " << cur_layer->get_neuron_count() << endl;
+            cout << "\t Trainable weights: " << cur_layer->get_trainable_weights_count() << endl;
+            trainable_weights_count += cur_layer->get_trainable_weights_count();
+        }
         if (cur_layer->get_activation() != NULL) {
             cout << "\t Activation: " << cur_layer->get_activation()->name << endl;
         }
         cout << "\t Output shape: (" << cur_layer->get_output_shape()[0] << "," << cur_layer->get_output_shape()[1] << "," << cur_layer->get_output_shape()[2] << ")" << endl;
         cur_layer = cur_layer->get_next_layer();
     }
+
+    cout << "Total number of trainable weights: " << trainable_weights_count << endl;
 }
 
 void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer) {
@@ -53,14 +59,17 @@ void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer) {
         throw;
     }
 
-    // Pre-calculate output shapes for all layers
+    // Pre-calculate output shapes for all layers and initialize their neurons
     Layer* cur_layer = this->input_layer;
     unsigned int* output_shape = input_shape; // Pretend that the sample is output from non-existent layer
     while (cur_layer != NULL) { // Go through the network and calculate output shapes
         cur_layer->calculate_output_shape(output_shape);
-        output_shape = cur_layer->get_output_shape();
+        output_shape = cur_layer->get_output_shape(); // Get output shape as input shape for next layer
+
+        if (cur_layer->get_neuron_count() > 0) { // If the layer has neurons, initialize them
+            cur_layer->initialize_neurons();
+        }
+
         cur_layer = cur_layer->get_next_layer();
     }
-
-    // Initialize neurons in all layers
 }

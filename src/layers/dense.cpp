@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <random>
 #include "../layer.hpp"
 #include "../neuron.hpp"
 #include "../matrix.hpp"
@@ -39,4 +40,29 @@ Matrix* Dense::process_channel(Matrix* data) {
     }
 
     return result_matrix;
+}
+
+void Dense::initialize_neurons() {
+    this->trainable_weights_count = 0; // Reset the counter of trainable weights
+
+    // Get output shape of previous layer
+    unsigned int* input_shape = this->prev_layer->get_output_shape();
+
+    // Weight initializer - normal distribution with mean = 0 and stddev = 1
+    random_device rd;
+    mt19937 gen(rd()); // Randomizer
+    normal_distribution<float> normal(0.0, 1.0);
+
+    for (unsigned int i = 0; i < this->neurons.size(); i++) { // Iterate over neurons from current layer
+        for (unsigned int j = 0; j < input_shape[0]; j++) { // Iterate over neurons from previous layer
+            // Initialize weights and their derivatives - one for each neuron in previous layer
+            this->neurons[i]->weights.push_back(normal(gen)); // Random number
+            this->neurons[i]->weights_d.push_back(0.0); // Default value
+            this->trainable_weights_count++;
+        }
+
+        // Initialize bias randomly
+        this->neurons[i]->bias = normal(gen);
+        this->trainable_weights_count++;
+    }
 }

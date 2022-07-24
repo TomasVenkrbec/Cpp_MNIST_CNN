@@ -9,7 +9,7 @@
 class Dense: public Layer {
 public:
     /**
-     * @brief Construct a Conv object with selected neuron count
+     * @brief Construct a Dense layer with selected neuron count
      * 
      * @param neuron_count Layer neuron count
      */
@@ -28,7 +28,12 @@ public:
      * 
      * @param input_shape Input shape ([x,y,channels])
      */
-    void calculate_output_shape(unsigned int input_shape[3]); 
+    void calculate_output_shape(unsigned int input_shape[3]);
+
+    /**
+     * @brief Initialize neurons of layer
+     */
+    void initialize_neurons();
 };
 
 #endif

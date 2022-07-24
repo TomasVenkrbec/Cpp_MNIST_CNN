@@ -6,7 +6,7 @@
 #include "../matrix.hpp"
 #include "../activation.hpp"
 
-class Conv: public Layer {
+class Conv2D: public Layer {
 private:
     unsigned int kernel_size;
     unsigned int kernel_count;
@@ -14,12 +14,12 @@ private:
 
 public:
     /**
-     * @brief Construct a Conv object with selected kernel size and count
+     * @brief Construct a Conv2D object with selected kernel size and count
      * 
      * @param kernel_size Size of kernel (kernel_size * kernel_size)
      * @param kernel_count Kernel (filter) count in layer
      */
-    Conv(unsigned int kernel_size, unsigned int kernel_count, Activation *activation, bool padding = true);
+    Conv2D(unsigned int kernel_size, unsigned int kernel_count, Activation *activation, bool padding = true);
     
     /**
      * @brief Perform convolution over given data
@@ -35,6 +35,11 @@ public:
      * @param input_shape Input shape ([x,y,channels])
      */
     void calculate_output_shape(unsigned int input_shape[3]); 
+
+    /**
+     * @brief Initialize neurons of layer
+     */
+    void initialize_neurons();
 };
 
 #endif
