@@ -69,10 +69,11 @@ public:
     /**
      * @brief Perform forwards pass of data
      * 
-     * @param batch_data Vector of data samples (batch)
+     * @param data Batch of input data
+     * @param labels Batch of input labels
      * @return Batch of feature maps, model output given input data
      */
-    std::vector<std::vector<Matrix*>> forward_pass(std::vector<DataSample*> batch_data);
+    std::vector<std::vector<Matrix*>> forward_pass(std::vector<std::vector<Matrix*>> data);
 };
 
 #endif

@@ -1,9 +1,11 @@
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <cmath>
 #include "model.hpp"
 #include "layer.hpp"
 #include "callback.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
@@ -83,15 +85,7 @@ void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, ve
     }
 }
 
-vector<vector<Matrix*>> Model::forward_pass(vector<DataSample*> batch_data) {
-    // Get data and labels from DataSample
-    vector<vector<Matrix*>> data;
-    vector<unsigned int> labels;
-    for (auto sample: batch_data) {
-        data.push_back(sample->get_data());
-        labels.push_back(sample->get_label());
-    }
-
+vector<vector<Matrix*>> Model::forward_pass(vector<vector<Matrix*>> data) {
     // Pass input data to input layer and results to next layers
     Layer* cur_layer = this->input_layer;
     while (cur_layer != NULL) {
@@ -106,8 +100,23 @@ void Model::step() {
     // Get batch of training data
     vector<DataSample*> batch_data = this->dataset->get_train_batch();
 
+    // Get data and labels from DataSample
+    vector<vector<Matrix*>> data;
+    vector<unsigned int> labels;
+    for (auto sample: batch_data) {
+        data.push_back(sample->get_data());
+        labels.push_back(sample->get_label());
+    }
+    vector<vector<Matrix*>> labels_gt = one_hot(labels, this->dataset->get_max_label() + 1);
+    
     // Forward pass
-    vector<vector<Matrix*>> y_pred = this->forward_pass(batch_data);
+    vector<vector<Matrix*>> labels_pred = this->forward_pass(data);
+
+    // Call callbacks
+    for (auto callback: this->callbacks) {
+        float cb_res = callback->call(labels_pred, labels_gt);
+        cout << ", " << callback->name << ": " << setprecision(2) << cb_res;
+    }
 }
 
 void Model::validate() {
@@ -128,9 +137,11 @@ void Model::fit(unsigned int max_epochs) {
 
         this->dataset->reset_train_batch_generator(); // Reset training batch generator
         for (unsigned int step = 1; step <= steps_per_epoch; step++) { 
-            cout << "Step: " << step << "/" << steps_per_epoch << "\r";
-
+            cout << "Step: " << step << "/" << steps_per_epoch;
             this->step(); // Perform training step
+
+            cout.flush();
+            cout << "\r"; // Move cursor to beginning of line
         }
 
         this->validate(); // Perform validation

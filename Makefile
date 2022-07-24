@@ -3,6 +3,7 @@ src/train.cpp \
 src/matrix.cpp \
 src/dataset.cpp \
 src/model.cpp \
+src/utils.cpp \
 \
 src/layer.cpp \
 src/layers/conv.cpp \

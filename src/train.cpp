@@ -33,7 +33,7 @@ int main() {
     
     // Load data
     DatasetLoader* dataset = get_dataset_loader("mnist");
-    dataset->batch_size = 2;
+    dataset->batch_size = 32;
 
     // Initialize loss function
     CategoricalCrossentropy* loss = new CategoricalCrossentropy();
