@@ -27,25 +27,20 @@ public:
 class DatasetLoader {
 private:
     std::vector<DataSample> train_samples;
-    std::vector<DataSample> test_samples;
+    std::vector<DataSample> val_samples;
     unsigned int resolution;
     unsigned int max_label;
     unsigned int channels;
 
 public:
+    unsigned int batch_size;
+
     /**
      * @brief Get resolution of samples
      * 
      * @return Resolution of samples
      */
     unsigned int get_resolution();
-
-    /**
-     * @brief Set resolution of samples
-     * 
-     * @param resolution Resolution of samples
-     */
-    void set_resolution(unsigned int resolution);
 
     /**
      * @brief Get number of channels in samples
@@ -55,13 +50,6 @@ public:
     unsigned int get_channels();
 
     /**
-     * @brief Set number of channels in samples
-     * 
-     * @param resolution Number of channels
-     */
-    void set_channels(unsigned int channels);
-
-    /**
      * @brief Get the max value of label
      * 
      * @return Maximal value of label
@@ -69,11 +57,18 @@ public:
     unsigned int get_max_label();
 
     /**
-     * @brief Set the max value of label
+     * @brief Get the max value of label
      * 
-     * @param max_label Maximal value of label
+     * @return Maximal value of label
      */
-    void set_max_label(unsigned int max_label);
+    unsigned int get_train_sample_count();
+
+    /**
+     * @brief Get the max value of label
+     * 
+     * @return Maximal value of label
+     */
+    unsigned int get_val_sample_count();
 
     /**
      * @brief Add a new sample to train dataset
@@ -83,27 +78,25 @@ public:
     void add_train_sample(DataSample* sample);
 
     /**
-     * @brief Add a new sample to test dataset
+     * @brief Add a new sample to val dataset
      * 
      * @param sample Added sample 
      */
-    void add_test_sample(DataSample* sample);
+    void add_val_sample(DataSample* sample);
+
+    /**
+     * @brief Load MNIST dataset into DatasetLoader
+     */
+    void load_mnist_dataset();
+
+    /**
+     * @brief Load MNIST csv file
+     * 
+     * @param name Name of MNIST subset {train, test}
+     */
+    void load_mnist_file(std::string name);
 };
 
-/**
- * @brief Get the DatasetLoader object for MNIST dataset
- * 
- * @return DatasetLoader object for MNIST dataset
- */
-DatasetLoader* get_mnist_dataset();
-
-/**
- * @brief Load MNIST csv file
- * 
- * @param dataset Object for loaded data
- * @param name Name of MNIST subset {train, test}
- */
-void load_mnist_file(DatasetLoader* dataset, std::string name);
 
 /**
  * @brief Check if line from dataset in CSV format has correct label and correct resolution

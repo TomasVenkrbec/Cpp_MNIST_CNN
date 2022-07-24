@@ -1,6 +1,9 @@
 #include <iostream>
+#include <vector>
+#include <cmath>
 #include "model.hpp"
 #include "layer.hpp"
+#include "callback.hpp"
 
 using namespace std;
 
@@ -17,6 +20,10 @@ void Model::add_layer(Layer* layer) {
         cur_layer->add_next_layer(layer);
         layer->add_prev_layer(cur_layer);
     }
+}
+
+vector<Callback*> Model::get_callbacks() {
+    return this->callbacks;
 }
 
 void Model::print_model() {
@@ -46,10 +53,11 @@ void Model::print_model() {
     cout << "Total number of trainable weights: " << trainable_weights_count << endl;
 }
 
-void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer) {
+void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, vector<Callback*> callbacks) {
     this->dataset = dataset;
     this->loss = loss;
     this->optimizer = optimizer;
+    this->callbacks = callbacks;
 
     // Setup all layers to have their correct inputs and outputs
     unsigned int input_shape[3] = {this->dataset->get_resolution(), this->dataset->get_resolution(), this->dataset->get_channels()};
@@ -71,5 +79,30 @@ void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer) {
         }
 
         cur_layer = cur_layer->get_next_layer();
+    }
+}
+
+void Model::step() {
+
+}
+
+void Model::validate() {
+
+}
+
+void Model::fit(unsigned int max_epochs) {
+    unsigned int steps_per_epoch = floor(this->dataset->get_train_sample_count() / this->dataset->batch_size);
+
+    for (unsigned int epoch = 1; epoch <= max_epochs; epoch++) {
+        cout << "Epoch: " << epoch << "/" << max_epochs << endl;
+        for (unsigned int step = 1; step <= steps_per_epoch; step++) { 
+            cout << "Step: " << step << "/" << steps_per_epoch << "\r";
+
+            this->step(); // Perform training step
+        }
+
+        this->validate(); // Perform validation
+
+        cout << endl;
     }
 }

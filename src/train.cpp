@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include "matrix.hpp"
 #include "dataset.hpp"
 #include "layers/dense.hpp"
@@ -9,6 +10,8 @@
 #include "optimizers/adam.hpp"
 #include "activations/relu.hpp"
 #include "activations/softmax.hpp"
+#include "callback.hpp"
+#include "callbacks/accuracy.hpp"
 #include "model.hpp"
 
 using namespace std;
@@ -30,6 +33,7 @@ int main() {
     
     // Load data
     DatasetLoader* dataset = get_dataset_loader("mnist");
+    dataset->batch_size = 2;
 
     // Initialize loss function
     CategoricalCrossentropy* loss = new CategoricalCrossentropy();
@@ -38,11 +42,19 @@ int main() {
     float learning_rate = 0.001;
     Adam* optimizer = new Adam(learning_rate);
 
+    // Initialize callbacks
+    vector<Callback*> callback_vector;
+    callback_vector.push_back(new Accuracy());
+
     // Compile the model
-    model.compile(dataset, loss, optimizer);
+    model.compile(dataset, loss, optimizer, callback_vector);
 
     // Print network
     model.print_model();
+
+    // Train network
+    unsigned int max_epochs = 3;
+    model.fit(max_epochs);
 
     return 0;
 }

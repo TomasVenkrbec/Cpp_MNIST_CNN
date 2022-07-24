@@ -20,6 +20,9 @@ src/activation.cpp \
 src/activations/relu.cpp \
 src/activations/softmax.cpp \
 \
+src/callback.cpp \
+src/callbacks/accuracy.cpp \
+\
 
 all:
 	@g++ $(SOURCE) -o train

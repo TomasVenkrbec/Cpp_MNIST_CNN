@@ -18,33 +18,30 @@ void DatasetLoader::add_train_sample(DataSample* sample) {
     this->train_samples.push_back(*sample);
 }
 
-void DatasetLoader::add_test_sample(DataSample* sample) {
-    this->test_samples.push_back(*sample);
+void DatasetLoader::add_val_sample(DataSample* sample) {
+    this->val_samples.push_back(*sample);
 }
 
 unsigned int DatasetLoader::get_resolution() {
     return this->resolution;
 }
 
-void DatasetLoader::set_resolution(unsigned int resolution) {
-    this->resolution = resolution;
-}
-
 unsigned int DatasetLoader::get_max_label() {
     return this->max_label;
-}
-
-void DatasetLoader::set_max_label(unsigned int max_label) {
-    this->max_label = max_label;
 }
 
 unsigned int DatasetLoader::get_channels() {
     return this->channels;
 }
 
-void DatasetLoader::set_channels(unsigned int channels) {
-    this->channels = channels;
+unsigned int DatasetLoader::get_train_sample_count() {
+    return this->train_samples.size();
 }
+
+unsigned int DatasetLoader::get_val_sample_count() {
+    return this->val_samples.size();
+}
+
 
 DataSample::DataSample(unsigned int label, vector<Matrix*> data) {
     this->label = label;
@@ -99,7 +96,7 @@ DataSample* parse_csv_line(string line, unsigned int max_label, unsigned int x_s
     return new DataSample(label, data_matrix_vector);
 }
 
-void load_mnist_file(DatasetLoader* dataset, string name) {
+void DatasetLoader::load_mnist_file(string name) {
     string line;
     ifstream file;
     file.open("mnist_csv/mnist_" + name + ".csv");
@@ -120,10 +117,10 @@ void load_mnist_file(DatasetLoader* dataset, string name) {
 
             // Add sample to dataset
             if (name == "train") {
-                dataset->add_train_sample(sample);
+                this->add_train_sample(sample);
             }
             else {
-                dataset->add_test_sample(sample);
+                this->add_val_sample(sample);
             }
         }
         catch (...) {
@@ -135,15 +132,12 @@ void load_mnist_file(DatasetLoader* dataset, string name) {
     file.close();
 }
 
-DatasetLoader* get_mnist_dataset() {
-    DatasetLoader* dataset = new DatasetLoader;
-    dataset->set_resolution(MNIST_RESOLUTION);
-    dataset->set_max_label(MNIST_MAX_LABEL);
-    dataset->set_channels(MNIST_CHANNELS);
-    load_mnist_file(dataset, "train"); // Load training data
-    load_mnist_file(dataset, "test"); // Load test data
-
-    return dataset;
+void DatasetLoader::load_mnist_dataset() {
+    this->resolution = MNIST_RESOLUTION;
+    this->max_label = MNIST_MAX_LABEL;
+    this->channels = MNIST_CHANNELS;
+    this->load_mnist_file("train"); // Load training data
+    this->load_mnist_file("test"); // Load val data
 }
 
 DatasetLoader* get_dataset_loader(string dataset)
@@ -151,7 +145,9 @@ DatasetLoader* get_dataset_loader(string dataset)
     if (dataset == "mnist") {
         cout << "Loading MNIST dataset." << endl;
 
-        return get_mnist_dataset();
+        DatasetLoader* dataset = new DatasetLoader;
+        dataset->load_mnist_dataset();
+        return dataset;
     }
     else {
         cerr << "ERROR: Dataset " << dataset << " is not available!" << endl;
