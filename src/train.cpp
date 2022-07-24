@@ -16,27 +16,27 @@ using namespace std;
 int main() {
     // Initialize network
     Model model;
-    model.add_layer(new ConvLayer(3, 4, new ReLU())); // 28x28 - padding
-    model.add_layer(new ConvLayer(3, 8, new ReLU())); // 28x28 - padding
-    model.add_layer(new AvgPoolLayer(2)); // Downsample to 14x14
-    model.add_layer(new ConvLayer(3, 16, new ReLU())); // 12x12 - no padding
-    model.add_layer(new ConvLayer(3, 32, new ReLU())); // 12x12 - padding
-    model.add_layer(new AvgPoolLayer(2)); // Downsample to 6x6
-    model.add_layer(new ConvLayer(3, 32, new ReLU())); // 6x6 - padding
-    model.add_layer(new FlattenLayer());
-    model.add_layer(new DenseLayer(128, new ReLU()));
-    model.add_layer(new DenseLayer(32, new ReLU()));
-    model.add_layer(new DenseLayer(10, new Softmax()));
+    model.add_layer(new Conv(3, 4, new ReLU())); // 28x28 - padding
+    model.add_layer(new Conv(3, 8, new ReLU())); // 28x28 - padding
+    model.add_layer(new AvgPool(2)); // Downsample to 14x14
+    model.add_layer(new Conv(3, 16, new ReLU(), false)); // 12x12 - no padding
+    model.add_layer(new Conv(3, 32, new ReLU())); // 12x12 - padding
+    model.add_layer(new AvgPool(2)); // Downsample to 6x6
+    model.add_layer(new Conv(3, 32, new ReLU())); // 6x6 - padding
+    model.add_layer(new Flatten());
+    model.add_layer(new Dense(128, new ReLU()));
+    model.add_layer(new Dense(32, new ReLU()));
+    model.add_layer(new Dense(10, new Softmax()));
     
     // Load data
-    DatasetLoader *dataset = get_dataset_loader("mnist");
+    DatasetLoader* dataset = get_dataset_loader("mnist");
 
     // Initialize loss function
-    CategoricalCrossentropy *loss = new CategoricalCrossentropy();
+    CategoricalCrossentropy* loss = new CategoricalCrossentropy();
 
     // Initialize optimizer
     float learning_rate = 0.001;
-    Adam *optimizer = new Adam(learning_rate);
+    Adam* optimizer = new Adam(learning_rate);
 
     // Compile the model
     model.compile(dataset, loss, optimizer);

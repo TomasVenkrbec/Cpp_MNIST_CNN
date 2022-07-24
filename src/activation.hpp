@@ -13,6 +13,14 @@ public:
      * @param name Activation function name
      */
     Activation();
+
+    /**
+     * @brief Perform activation calculation
+     * 
+     * @param u Value of neuron
+     * @return Activation of neuron
+     */
+    virtual float call(float u);
 };
 
 #endif

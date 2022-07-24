@@ -1,22 +1,27 @@
 #ifndef FLATTENLAYER_H
 #define FLATTENLAYER_H
 
+#include <vector>
 #include "../layer.hpp"
+#include "../matrix.hpp"
 
-class FlattenLayer: public Layer {
+class Flatten: public Layer {
 private:
     unsigned int kernel_size;
 
 public:
     /**
-     * @brief Construct a FlattenLayer object with selected kernel size
+     * @brief Construct a Flatten object with selected kernel size
      */
-    FlattenLayer();
-
+    Flatten();
+    
     /**
-     * @brief Forward propagation function
+     * @brief Process one sample of input data
+     * 
+     * @param sample Sample of input data
+     * @return Output of layer operation on input sample
      */
-    void forward();
+    std::vector<Matrix*> process_sample(std::vector<Matrix*> sample);
 
     /**
      * @brief Calculate output shape of layer

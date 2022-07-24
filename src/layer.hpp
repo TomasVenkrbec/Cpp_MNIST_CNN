@@ -5,14 +5,16 @@
 #include <vector>
 #include "neuron.hpp"
 #include "activation.hpp"
+#include "matrix.hpp"
 
 class Layer {
 protected:
-    std::vector<Neuron> neurons;
-    Activation *activation = NULL;
+    std::vector<Neuron*> neurons;
+    Activation* activation = NULL;
     Layer* prev_layer = NULL;
     Layer* next_layer = NULL;
     unsigned int output_shape[3];
+    bool process_by_channel = true; // true - process image channel by channel, false - process image sample by sample
 
 public:
     std::string name;
@@ -83,12 +85,32 @@ public:
      * 
      * @return Vector of neurons from layer 
      */
-    std::vector<Neuron> get_neurons();
+    std::vector<Neuron*> get_neurons();
 
     /**
-     * @brief Perform forward pass
+     * @brief Forward propagation function
+     * 
+     * @param input_shape Shape of the input ([batch_size,x,y,channels])
+     * @param data Vector of vectors of channels - batch of feature maps
+     * @return Batch of feature maps
      */
-    virtual void forward();
+    std::vector<std::vector<Matrix*>> forward(unsigned int input_shape[4], std::vector<std::vector<Matrix*>> data);
+
+    /**
+     * @brief Process one channel of input data
+     * 
+     * @param channel Channel of input data
+     * @return Output of layer operation on input channel
+     */
+    virtual Matrix* process_channel(Matrix* channel);
+
+    /**
+     * @brief Process one sample of input data
+     * 
+     * @param sample Sample of input data
+     * @return Output of layer operation on input sample
+     */
+    virtual std::vector<Matrix*> process_sample(std::vector<Matrix*> sample);
 
     /**
      * @brief Calculate output shape of layer

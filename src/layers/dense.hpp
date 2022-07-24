@@ -6,22 +6,22 @@
 #include "../activation.hpp"
 #include "../activations/relu.hpp"
 
-class DenseLayer: public Layer {
+class Dense: public Layer {
 public:
     /**
-     * @brief Construct a ConvLayer object with selected neuron count
+     * @brief Construct a Conv object with selected neuron count
      * 
      * @param neuron_count Layer neuron count
      */
-    DenseLayer(unsigned int neuron_count, Activation *activation);
+    Dense(unsigned int neuron_count, Activation *activation);
 
     /**
-     * @brief Forward propagation function
-     *
-     * @param input_shape Shape of the input ([batch_size,x,y,channels])
-     * @param data Vector of vectors of channels - batch of feature maps
+     * @brief Perform weighted sum over given data with given weights
+     * 
+     * @param data Input channel
+     * @return Weighted sum of channel and weights
      */
-    void forward(unsigned int input_shape[4], std::vector<std::vector<Matrix*>> data);
+    Matrix* process_channel(Matrix* data);
 
     /**
      * @brief Calculate output shape of layer

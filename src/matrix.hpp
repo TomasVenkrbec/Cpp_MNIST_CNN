@@ -61,6 +61,16 @@ public:
     float convolve(Matrix* kernel, int start_x, int start_y);
 
     /**
+     * @brief Calculate average value of matrix over area covered by kernel
+     * 
+     * @param kernel Averging kernel
+     * @param start_x x coordinate where start of kernel matrix will be 
+     * @param start_y y coordinate where start of kernel matrix will be
+     * @return Resulting average value
+     */
+    float get_avg(Matrix* kernel, int start_x, int start_y);
+
+    /**
      * @brief Set given coordinate of the matrix to selected value
      * 
      * @param x Selected row of matrix

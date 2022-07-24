@@ -1,16 +1,18 @@
 #include <iostream>
 #include "../layer.hpp"
 #include "../neuron.hpp"
+#include "../matrix.hpp"
 #include "avgpool.hpp"
 
 using namespace std;
 
-AvgPoolLayer::AvgPoolLayer(unsigned int kernel_size) : Layer(0) {
+AvgPool::AvgPool(unsigned int kernel_size) : Layer(0) {
     this->kernel_size = kernel_size;
-    this->name = "AvgPoolLayer";
+    this->name = "AvgPool";
+    this->process_by_channel = true;
 }
 
-void AvgPoolLayer::calculate_output_shape(unsigned int input_shape[3]) {
+void AvgPool::calculate_output_shape(unsigned int input_shape[3]) {
     if (this->kernel_size > input_shape[0] || this->kernel_size > input_shape[1]) {
         cerr << "ERROR: Can't use AvgPool with size " << this->kernel_size << " on input with size (" << input_shape[0] << "," << input_shape[1] << ")." << endl;
         throw;
@@ -26,6 +28,19 @@ void AvgPoolLayer::calculate_output_shape(unsigned int input_shape[3]) {
     this->output_shape[2] = input_shape[2];
 }   
 
-void AvgPoolLayer::forward() {
-    cout << "AvgPoolLayer::forward()" << endl;
+Matrix* AvgPool::process_channel(Matrix* data) {
+    // Create matrix for result, based on pre-calculated output shape
+    Matrix* result_matrix = new Matrix(this->output_shape[0], this->output_shape[1]);
+
+    // Create averaging mask (kernel)
+    Matrix *kernel = new Matrix(this->kernel_size, this->kernel_size);
+
+    for (int i = 0; i < data->get_x_size(); i += this->kernel_size) { // Move kernel over rows from data
+        for (int j = 0; j < data->get_y_size(); j += this->kernel_size) { // Move kernel over cols from data
+            float result = data->get_avg(kernel, i, j); // Get average in masked area
+            result_matrix->set_matrix(i / this->kernel_size, j / this->kernel_size, result); // Save the average to corresponding position
+        }
+    }
+
+    return result_matrix;
 }

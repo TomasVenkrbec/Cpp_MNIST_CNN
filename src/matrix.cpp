@@ -89,6 +89,26 @@ float Matrix::convolve(Matrix* kernel, int start_x, int start_y) {
     return result;
 }
 
+float Matrix::get_avg(Matrix* kernel, int start_x, int start_y) {
+    float result = 0.0;
+
+    for (unsigned int i = 0; i < kernel->get_x_size(); i++) { // Iterate over x coordinates of kernel
+        for (unsigned int j = 0; j < kernel->get_y_size(); j++) { // Iterate over y coordinates of kernel
+            // Out-of-bounds coordinates are an error, there can't be padding
+            if (i + start_x < 0 || i + start_x >= this->get_x_size() || j + start_y < 0 || j + start_y >= this->get_y_size()) {
+                cerr << "ERROR: Coordinate (" << i + start_x << "," << j + start_y << ") is out of bounds for matrix of size (" << this->get_x_size() << "," << this->get_y_size() << ")" << endl;
+                throw;
+            }
+            
+            // Sum the values first
+            result += this->data[i + start_x][j + start_y];
+        }
+    }
+
+    // Calculate average
+    return result / (kernel->get_x_size() * kernel->get_y_size());
+}
+
 Matrix Matrix::operator+(const float& value) {
     Matrix res = Matrix(this->x_size, this->y_size);
 

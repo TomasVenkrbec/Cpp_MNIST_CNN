@@ -5,7 +5,18 @@
 
 class ReLU : public Activation {
 public:
+    /**
+     * @brief ReLU object constructor
+     */
     ReLU();
+
+    /**
+     * @brief Perform activation calculation
+     * 
+     * @param u Value of neuron
+     * @return Activation of neuron
+     */
+    float call(float u);
 };
 
 #endif
