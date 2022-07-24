@@ -5,10 +5,10 @@ src/dataset.cpp \
 src/model.cpp \
 \
 src/layer.cpp \
-src/layers/convlayer.cpp \
-src/layers/denselayer.cpp \
-src/layers/avgpoollayer.cpp \
-src/layers/flattenlayer.cpp \
+src/layers/conv.cpp \
+src/layers/dense.cpp \
+src/layers/avgpool.cpp \
+src/layers/flatten.cpp \
 \
 src/loss.cpp \
 src/losses/categoricalcrossentropy.cpp \

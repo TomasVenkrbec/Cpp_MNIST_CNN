@@ -1,7 +1,7 @@
 #include <iostream>
 #include "../layer.hpp"
 #include "../neuron.hpp"
-#include "avgpoollayer.hpp"
+#include "avgpool.hpp"
 
 using namespace std;
 

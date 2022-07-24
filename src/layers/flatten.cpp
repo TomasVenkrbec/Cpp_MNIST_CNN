@@ -1,7 +1,7 @@
 #include <iostream>
 #include "../layer.hpp"
 #include "../neuron.hpp"
-#include "flattenlayer.hpp"
+#include "flatten.hpp"
 
 using namespace std;
 

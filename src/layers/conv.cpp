@@ -4,7 +4,7 @@
 #include "../neuron.hpp"
 #include "../matrix.hpp"
 #include "../activation.hpp"
-#include "convlayer.hpp"
+#include "conv.hpp"
 
 using namespace std;
 

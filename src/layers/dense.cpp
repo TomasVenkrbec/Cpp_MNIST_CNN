@@ -4,7 +4,7 @@
 #include "../neuron.hpp"
 #include "../matrix.hpp"
 #include "../activation.hpp"
-#include "denselayer.hpp"
+#include "dense.hpp"
 
 using namespace std;
 
