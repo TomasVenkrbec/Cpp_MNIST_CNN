@@ -8,10 +8,12 @@
 #include "optimizer.hpp"
 #include "loss.hpp"
 #include "callback.hpp"
+#include "matrix.hpp"
 
 class Model {
 private:
     Layer* input_layer = NULL;
+    unsigned int* input_shape;
     DatasetLoader* dataset;
     Optimizer* optimizer;
     Loss* loss;
@@ -63,6 +65,14 @@ public:
      * @brief Perform validation of model
      */
     void validate();
+
+    /**
+     * @brief Perform forwards pass of data
+     * 
+     * @param batch_data Vector of data samples (batch)
+     * @return Batch of feature maps, model output given input data
+     */
+    std::vector<std::vector<Matrix*>> forward_pass(std::vector<DataSample*> batch_data);
 };
 
 #endif

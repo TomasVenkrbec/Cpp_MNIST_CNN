@@ -98,11 +98,10 @@ public:
     /**
      * @brief Forward propagation function
      * 
-     * @param input_shape Shape of the input ([batch_size,x,y,channels])
      * @param data Vector of vectors of channels - batch of feature maps
      * @return Batch of feature maps
      */
-    std::vector<std::vector<Matrix*>> forward(unsigned int input_shape[4], std::vector<std::vector<Matrix*>> data);
+    std::vector<std::vector<Matrix*>> forward(std::vector<std::vector<Matrix*>> data);
 
     /**
      * @brief Process one channel of input data

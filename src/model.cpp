@@ -50,7 +50,7 @@ void Model::print_model() {
         cur_layer = cur_layer->get_next_layer();
     }
 
-    cout << "Total number of trainable weights: " << trainable_weights_count << endl;
+    cout << "Total number of trainable weights: " << trainable_weights_count << endl << endl;
 }
 
 void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, vector<Callback*> callbacks) {
@@ -61,6 +61,7 @@ void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, ve
 
     // Setup all layers to have their correct inputs and outputs
     unsigned int input_shape[3] = {this->dataset->get_resolution(), this->dataset->get_resolution(), this->dataset->get_channels()};
+    this->input_shape = input_shape;
 
     if (this->input_layer == NULL) {
         cerr << "ERROR: Can't compile model without any layers." << endl;
@@ -69,7 +70,7 @@ void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, ve
 
     // Pre-calculate output shapes for all layers and initialize their neurons
     Layer* cur_layer = this->input_layer;
-    unsigned int* output_shape = input_shape; // Pretend that the sample is output from non-existent layer
+    unsigned int* output_shape = this->input_shape; // Pretend that the sample is output from non-existent layer
     while (cur_layer != NULL) { // Go through the network and calculate output shapes
         cur_layer->calculate_output_shape(output_shape);
         output_shape = cur_layer->get_output_shape(); // Get output shape as input shape for next layer
@@ -82,9 +83,31 @@ void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, ve
     }
 }
 
+vector<vector<Matrix*>> Model::forward_pass(vector<DataSample*> batch_data) {
+    // Get data and labels from DataSample
+    vector<vector<Matrix*>> data;
+    vector<unsigned int> labels;
+    for (auto sample: batch_data) {
+        data.push_back(sample->get_data());
+        labels.push_back(sample->get_label());
+    }
+
+    // Pass input data to input layer and results to next layers
+    Layer* cur_layer = this->input_layer;
+    while (cur_layer != NULL) {
+        data = cur_layer->forward(data);
+        cur_layer = cur_layer->get_next_layer();
+    }
+
+    return data;
+}
+
 void Model::step() {
     // Get batch of training data
     vector<DataSample*> batch_data = this->dataset->get_train_batch();
+
+    // Forward pass
+    vector<vector<Matrix*>> y_pred = this->forward_pass(batch_data);
 }
 
 void Model::validate() {
@@ -109,7 +132,7 @@ void Model::fit(unsigned int max_epochs) {
 
             this->step(); // Perform training step
         }
-        
+
         this->validate(); // Perform validation
 
         cout << endl;

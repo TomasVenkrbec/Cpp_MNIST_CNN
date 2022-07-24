@@ -9,7 +9,7 @@
 #include "losses/categoricalcrossentropy.hpp"
 #include "optimizers/adam.hpp"
 #include "activations/relu.hpp"
-#include "activations/softmax.hpp"
+#include "activations/sigmoid.hpp"
 #include "callback.hpp"
 #include "callbacks/accuracy.hpp"
 #include "model.hpp"
@@ -29,7 +29,7 @@ int main() {
     model.add_layer(new Flatten());
     model.add_layer(new Dense(128, new ReLU()));
     model.add_layer(new Dense(32, new ReLU()));
-    model.add_layer(new Dense(10, new Softmax()));
+    model.add_layer(new Dense(10, new Sigmoid()));
     
     // Load data
     DatasetLoader* dataset = get_dataset_loader("mnist");

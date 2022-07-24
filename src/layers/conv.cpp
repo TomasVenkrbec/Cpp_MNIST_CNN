@@ -15,7 +15,7 @@ Conv2D::Conv2D(unsigned int kernel_size, unsigned int kernel_count, Activation *
     this->kernel_size = kernel_size;
     this->padding = padding;
     this->activation = activation;
-    this->process_by_channel = true;
+    this->process_by_channel = false;
 }
 
 void Conv2D::calculate_output_shape(unsigned int input_shape[3]) {
@@ -37,17 +37,25 @@ void Conv2D::calculate_output_shape(unsigned int input_shape[3]) {
     this->output_shape[2] = this->kernel_count;
 }
 
-Matrix* Conv2D::process_channel(Matrix* data) {
+vector<Matrix*> Conv2D::process_sample(vector<Matrix*> sample) {
     // Create matrix for result, based on pre-calculated output shape, which already counts with padding
+    vector<Matrix*> res_sample;
     Matrix* result_matrix = new Matrix(this->output_shape[0], this->output_shape[1]);
 
-    // Get kernel from neurons
+    // Get kernels from neurons
     vector<float> kernel_vector;
+    vector<Matrix*> kernel_matrices;
+
     for (auto a: this->get_neurons()) {
         kernel_vector.push_back(a->weights[0]); // CNN neurons have only one weight
+
+        if (kernel_vector.size() == this->kernel_size * this->kernel_size) { // If we have all weights from filter, save it and move to next one
+            Matrix* kernel = new Matrix(this->kernel_size, this->kernel_size);
+            kernel->set_matrix_from_vector(kernel_vector);
+            kernel_matrices.push_back(kernel);
+            kernel_vector.clear();
+        } 
     }
-    Matrix *kernel = new Matrix(this->kernel_size, this->kernel_size);
-    kernel->set_matrix_from_vector(kernel_vector);
 
     int start_x, start_y;
     if (this->padding) {
@@ -57,15 +65,22 @@ Matrix* Conv2D::process_channel(Matrix* data) {
         start_x = start_y = 0; // Start at beginning
     }
 
-    for (int i = 0; i < this->output_shape[0]; i++) { // Iterate accordingly to pre-calculated output shape
-        for (int j = 0; j < this->output_shape[1]; j++) { 
-            float result = data->convolve(kernel, i + start_x, j + start_y); // Get result of convolution
-            result = this->activation->call(result); // Perform call of activation function
-            result_matrix->set_matrix(i, j, result); // Save the value
+    for(unsigned int i = 0; i < kernel_matrices.size(); i++) { // Iterate over CNN kernels
+        for(unsigned int j = 0; j < sample.size(); j++) { // Iterate over input channels
+            for (int x = 0; x < this->output_shape[0]; x++) { // Iterate over input rows accordingly to pre-calculated output shape
+                for (int y = 0; y < this->output_shape[1]; y++) { // Iterate over input cols accordingly to pre-calculated output shape
+                    float result = sample[j]->convolve(kernel_matrices[i], x + start_x, y + start_y); // Get result of convolution
+                    result = this->activation->call(result); // Perform call of activation function
+                    result_matrix->set_matrix(x, y, result_matrix->at(x, y) + result); // Add the value to matrix
+                }
+            }
         }
+        // Kernel is done, save result and reset the matrix for next kernel
+        res_sample.push_back(result_matrix);
+        result_matrix = new Matrix(this->output_shape[0], this->output_shape[1]);
     }
 
-    return result_matrix;
+    return res_sample;
 }
 
 void Conv2D::initialize_neurons() {

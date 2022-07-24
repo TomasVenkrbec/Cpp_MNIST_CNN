@@ -53,7 +53,7 @@ Activation* Layer::get_activation() {
     return this->activation;
 }
 
-vector<vector<Matrix*>> Layer::forward(unsigned int input_shape[4], vector<vector<Matrix*>> data) {
+vector<vector<Matrix*>> Layer::forward(vector<vector<Matrix*>> data) {
     // Data structures for results
     vector<vector<Matrix*>> res_samples;
     vector<Matrix*> res_sample;
@@ -76,17 +76,12 @@ vector<vector<Matrix*>> Layer::forward(unsigned int input_shape[4], vector<vecto
             res_sample = this->process_sample(data[i]);
         }
 
-        if (res_sample.size() != this->output_shape[2]) {
-            cerr << "ERROR: Channel count of outputs (" << res_sample.size() << ") doesn't match channel count of inputs (" << input_shape[2] << ")" << endl;
-            throw;
-        }
-
         res_samples.push_back(res_sample); // Save the result
         res_sample.clear();
     }
 
-    if (res_samples.size() != input_shape[0]) {
-        cerr << "ERROR: Batch size of outputs (" << res_samples.size() << ") doesn't match batch size of inputs (" << input_shape[0] << ")" << endl;
+    if (res_samples.size() != data.size()) {
+        cerr << "ERROR: Batch size of outputs (" << res_samples.size() << ") doesn't match batch size of inputs (" << data.size() << ")" << endl;
         throw;
     }
 

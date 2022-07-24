@@ -22,12 +22,12 @@ public:
     Conv2D(unsigned int kernel_size, unsigned int kernel_count, Activation *activation, bool padding = true);
     
     /**
-     * @brief Perform convolution over given data
+     * @brief Process sample with convolutional filters
      * 
-     * @param data Data to be convoluted
-     * @return Result of convolution
+     * @param sample Input sample
+     * @return Resulting feature map
      */
-    Matrix* process_channel(Matrix* data);
+    std::vector<Matrix*> process_sample(std::vector<Matrix*> sample);
 
     /**
      * @brief Calculate output shape of layer
