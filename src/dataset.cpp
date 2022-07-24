@@ -3,6 +3,8 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <algorithm>
+#include <random>
 #include "dataset.hpp"
 #include "matrix.hpp"
 
@@ -15,11 +17,11 @@ using namespace std;
 #define MNIST_MAX_LABEL 9
 
 void DatasetLoader::add_train_sample(DataSample* sample) {
-    this->train_samples.push_back(*sample);
+    this->train_samples.push_back(sample);
 }
 
 void DatasetLoader::add_val_sample(DataSample* sample) {
-    this->val_samples.push_back(*sample);
+    this->val_samples.push_back(sample);
 }
 
 unsigned int DatasetLoader::get_resolution() {
@@ -42,6 +44,45 @@ unsigned int DatasetLoader::get_val_sample_count() {
     return this->val_samples.size();
 }
 
+vector<DataSample*> DatasetLoader::get_train_batch() {
+    if (this->current_sample_train + this->batch_size > this->train_samples.size()) {
+        cerr << "ERROR: Not enough training samples left to complete the batch" << endl;
+        throw; 
+    }
+
+    vector<DataSample*> batch_data;
+    while (batch_data.size() < this->batch_size) {
+        batch_data.push_back(this->train_samples[this->current_sample_train++]);
+    }
+
+    return batch_data;
+}
+
+void DatasetLoader::reset_train_batch_generator() {
+    this->current_sample_train = 0;
+
+    random_device rd;
+    mt19937 gen(rd()); // Randomizer
+    shuffle(begin(this->train_samples), end(train_samples), gen); // Shuffle training samples
+}
+
+vector<DataSample*> DatasetLoader::get_val_batch() {
+    if (this->current_sample_val + this->batch_size > this->val_samples.size()) {
+        cerr << "ERROR: Not enough validation samples left to complete the batch" << endl;
+        throw; 
+    }
+
+    vector<DataSample*> batch_data;
+    while (batch_data.size() < this->batch_size) {
+        batch_data.push_back(this->val_samples[this->current_sample_val++]);
+    }
+
+    return batch_data;
+}
+
+void DatasetLoader::reset_val_batch_generator() {
+    this->current_sample_val = 0;
+}
 
 DataSample::DataSample(unsigned int label, vector<Matrix*> data) {
     this->label = label;
@@ -153,4 +194,12 @@ DatasetLoader* get_dataset_loader(string dataset)
         cerr << "ERROR: Dataset " << dataset << " is not available!" << endl;
         throw; 
     }
+}
+
+std::vector<Matrix*> DataSample::get_data() {
+    return this->data;
+}
+
+unsigned int DataSample::get_label() {
+    return this->label;
 }

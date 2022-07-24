@@ -83,11 +83,18 @@ void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, ve
 }
 
 void Model::step() {
-
+    // Get batch of training data
+    vector<DataSample*> batch_data = this->dataset->get_train_batch();
 }
 
 void Model::validate() {
+    unsigned int steps_count = floor(this->dataset->get_val_sample_count() / this->dataset->batch_size);
 
+    this->dataset->reset_val_batch_generator(); // Reset validation batch generator
+    for (unsigned int step = 1; step <= steps_count; step++) { 
+        // Get batch of validation data
+        vector<DataSample*> batch_data = this->dataset->get_val_batch();
+    }
 }
 
 void Model::fit(unsigned int max_epochs) {
@@ -95,12 +102,14 @@ void Model::fit(unsigned int max_epochs) {
 
     for (unsigned int epoch = 1; epoch <= max_epochs; epoch++) {
         cout << "Epoch: " << epoch << "/" << max_epochs << endl;
+
+        this->dataset->reset_train_batch_generator(); // Reset training batch generator
         for (unsigned int step = 1; step <= steps_per_epoch; step++) { 
             cout << "Step: " << step << "/" << steps_per_epoch << "\r";
 
             this->step(); // Perform training step
         }
-
+        
         this->validate(); // Perform validation
 
         cout << endl;

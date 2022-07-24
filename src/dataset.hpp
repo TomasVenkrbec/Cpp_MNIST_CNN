@@ -8,7 +8,7 @@
 class DataSample {
 private:
     unsigned int label;
-    std::vector <Matrix*> data; // Vector of matrices (channels)
+    std::vector<Matrix*> data; // Vector of matrices (channels)
 
 public:
     /**
@@ -22,18 +22,58 @@ public:
      * @brief DataSample object destructor
      */
     ~DataSample();
+
+    /**
+     * @brief Get image data from sample
+     * 
+     * @return Vector of matrices (channels)
+     */
+    std::vector<Matrix*> get_data();
+
+    /**
+     * @brief Get label value from sample
+     * 
+     * @return Label value
+     */
+    unsigned int get_label();
 };
 
 class DatasetLoader {
 private:
-    std::vector<DataSample> train_samples;
-    std::vector<DataSample> val_samples;
+    std::vector<DataSample*> train_samples;
+    std::vector<DataSample*> val_samples;
     unsigned int resolution;
     unsigned int max_label;
     unsigned int channels;
+    unsigned int current_sample_train = 0; // Index of current train sample
+    unsigned int current_sample_val = 0; // Index of current val sample 
 
 public:
     unsigned int batch_size;
+
+    /**
+     * @brief Get batch of training data
+     * 
+     * @return Vector of training data samples
+     */
+    std::vector<DataSample*> get_train_batch();
+
+    /**
+     * @brief Reset batch generator of train data
+     */
+    void reset_train_batch_generator();
+
+    /**
+     * @brief Get batch of validation data
+     * 
+     * @return Vector of validation data samples
+     */
+    std::vector<DataSample*> get_val_batch();
+  
+    /**
+     * @brief Reset batch generator of validation data
+     */
+    void reset_val_batch_generator();
 
     /**
      * @brief Get resolution of samples
