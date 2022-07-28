@@ -45,8 +45,13 @@ vector<Matrix*> Conv2D::process_sample(vector<Matrix*> sample) {
     // Get kernels from neurons
     vector<float> kernel_vector;
     vector<Matrix*> kernel_matrices;
+    vector<float> kernel_biases;
 
     for (auto a: this->get_neurons()) {
+        if (kernel_vector.size() == 0) { // First neuron of kernel has the bias
+            kernel_biases.push_back(a->bias);
+        }
+
         kernel_vector.push_back(a->weights[0]); // CNN neurons have only one weight
 
         if (kernel_vector.size() == this->kernel_size * this->kernel_size) { // If we have all weights from filter, save it and move to next one
@@ -70,6 +75,7 @@ vector<Matrix*> Conv2D::process_sample(vector<Matrix*> sample) {
             for (int x = 0; x < this->output_shape[0]; x++) { // Iterate over input rows accordingly to pre-calculated output shape
                 for (int y = 0; y < this->output_shape[1]; y++) { // Iterate over input cols accordingly to pre-calculated output shape
                     float result = sample[j]->convolve(kernel_matrices[i], x + start_x, y + start_y); // Get result of convolution
+                    result += kernel_biases[i]; // Add bias (which is the same for all neurons from kernel)
                     result = this->activation->call(result); // Perform call of activation function
                     result_matrix->set_matrix(x, y, result_matrix->at(x, y) + result); // Add the value to matrix
                 }
@@ -93,7 +99,7 @@ void Conv2D::initialize_neurons() {
 
     for (unsigned int i = 0; i < this->neurons.size(); i++) { // Iterate over neurons from current layer
         // Since there's one bias per kernel, the first neuron will contain the bias for entire kernel
-        if (i % this->kernel_size == 0) {
+        if (i % (this->kernel_size * this->kernel_size) == 0) {
             // Initialize bias randomly
             this->neurons[i]->bias = normal(gen);
             this->trainable_weights_count++;
