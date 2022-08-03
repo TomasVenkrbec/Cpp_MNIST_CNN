@@ -1,6 +1,7 @@
 #include "aliases.hpp"
 #include "matrix.hpp"
 #include "utils.hpp"
+#include "dataset.hpp"
 
 using namespace std;
 
@@ -32,4 +33,12 @@ unsigned int get_argmax_pred(Sample pred) {
     }
 
     return idx_max;
+}
+
+void parse_datasample(vector<DataSample*> raw_data, Batch* data, LabelsScalar* labels) {
+    // Get data and labels from DataSample
+    for (auto sample: raw_data) {
+        data->push_back(sample->get_data());
+        labels->push_back(sample->get_label());
+    }
 }

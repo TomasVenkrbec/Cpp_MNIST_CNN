@@ -86,6 +86,12 @@ void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, ve
     }
 }
 
+void Model::reset_callbacks() {
+    for (auto callback: this->callbacks) {
+        callback->reset();
+    }
+}
+
 Batch Model::forward_pass(Batch data) {
     // Pass input data to input layer and results to next layers
     Layer* cur_layer = this->input_layer;
@@ -104,10 +110,7 @@ void Model::step() {
     // Get data and labels from DataSample
     Batch data;
     LabelsScalar labels;
-    for (auto sample: batch_data) {
-        data.push_back(sample->get_data());
-        labels.push_back(sample->get_label());
-    }
+    parse_datasample(batch_data, &data, &labels);
     LabelsOneHot labels_gt = one_hot(labels, this->dataset->get_max_label() + 1);
     
     // Forward pass
@@ -120,33 +123,56 @@ void Model::step() {
     }
 }
 
+void Model::train() {
+    unsigned int steps_per_epoch = floor(this->dataset->get_train_sample_count() / this->dataset->batch_size);
+    this->reset_callbacks();
+    this->dataset->reset_train_batch_generator(); // Reset training batch generator
+    for (unsigned int step = 1; step <= steps_per_epoch; step++) { 
+        cout << "Step: " << step << "/" << steps_per_epoch;
+        this->step(); // Perform training step
+
+        cout.flush();
+        cout << "\r"; // Move cursor to beginning of line
+    }
+}
+
 void Model::validate() {
     unsigned int steps_count = floor(this->dataset->get_val_sample_count() / this->dataset->batch_size);
 
+    this->reset_callbacks();
     this->dataset->reset_val_batch_generator(); // Reset validation batch generator
     for (unsigned int step = 1; step <= steps_count; step++) { 
+        cout << "Validation step: " << step << "/" << steps_count;
+
         // Get batch of validation data
         vector<DataSample*> batch_data = this->dataset->get_val_batch();
+
+        // Get data and labels from DataSample
+        Batch data;
+        LabelsScalar labels;
+        parse_datasample(batch_data, &data, &labels);
+        LabelsOneHot labels_gt = one_hot(labels, this->dataset->get_max_label() + 1);
+        
+        // Forward pass
+        LabelsOneHot labels_pred = this->forward_pass(data);
+
+        // Call callbacks
+        for (auto callback: this->callbacks) {
+            float cb_res = callback->call(labels_pred, labels_gt);
+            cout << ", " << callback->name << ": " << setprecision(2) << cb_res;
+        }
+
+        cout.flush();
+        cout << "\r"; // Move cursor to beginning of line
     }
 }
 
 void Model::fit(unsigned int max_epochs) {
-    unsigned int steps_per_epoch = floor(this->dataset->get_train_sample_count() / this->dataset->batch_size);
-
     for (unsigned int epoch = 1; epoch <= max_epochs; epoch++) {
         cout << "Epoch: " << epoch << "/" << max_epochs << endl;
-
-        this->dataset->reset_train_batch_generator(); // Reset training batch generator
-        for (unsigned int step = 1; step <= steps_per_epoch; step++) { 
-            cout << "Step: " << step << "/" << steps_per_epoch;
-            this->step(); // Perform training step
-
-            cout.flush();
-            cout << "\r"; // Move cursor to beginning of line
-        }
-
+        this->train(); // Perform training for 1 epoch
+        cout << endl; // New line to not delete the training progress bar
         this->validate(); // Perform validation
-
         cout << endl;
     }
 }

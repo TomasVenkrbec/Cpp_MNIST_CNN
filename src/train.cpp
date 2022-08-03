@@ -36,15 +36,16 @@ int main() {
     dataset->batch_size = 32;
 
     // Initialize loss function
-    CategoricalCrossentropy* loss = new CategoricalCrossentropy();
+    Loss* loss = new CategoricalCrossentropy();
 
     // Initialize optimizer
     float learning_rate = 0.001;
-    Adam* optimizer = new Adam(learning_rate);
+    Optimizer* optimizer = new Adam(learning_rate);
 
     // Initialize callbacks
     vector<Callback*> callback_vector;
-    callback_vector.push_back(new Accuracy());
+    unsigned int moving_average_samples = 100;
+    callback_vector.push_back(new Accuracy(moving_average_samples));
 
     // Compile the model
     model.compile(dataset, loss, optimizer, callback_vector);

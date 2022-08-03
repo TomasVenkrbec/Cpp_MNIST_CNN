@@ -62,9 +62,19 @@ public:
     void step();
 
     /**
+     * @brief Train model for 1 epoch
+     */
+    void train();
+
+    /**
      * @brief Perform validation of model
      */
     void validate();
+    
+    /**
+     * @brief Reset all callbacks
+     */
+    void reset_callbacks();
 
     /**
      * @brief Perform forwards pass of data
