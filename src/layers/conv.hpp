@@ -1,7 +1,7 @@
 #ifndef CONVLAYER_H
 #define CONVLAYER_H
 
-#include <vector>
+#include "../aliases.hpp"
 #include "../layer.hpp"
 #include "../matrix.hpp"
 #include "../activation.hpp"
@@ -32,7 +32,7 @@ public:
      * @param sample Input sample
      * @return Resulting feature map
      */
-    std::vector<Matrix*> process_sample(std::vector<Matrix*> sample);
+    Sample process_sample(Sample sample);
 
     /**
      * @brief Calculate output shape of layer

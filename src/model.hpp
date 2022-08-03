@@ -2,7 +2,7 @@
 #define MODEL_H
 
 #include <vector>
-#include <memory>
+#include "aliases.hpp"
 #include "layer.hpp"
 #include "dataset.hpp"
 #include "optimizer.hpp"
@@ -73,7 +73,7 @@ public:
      * @param labels Batch of input labels
      * @return Batch of feature maps, model output given input data
      */
-    std::vector<std::vector<Matrix*>> forward_pass(std::vector<std::vector<Matrix*>> data);
+    Batch forward_pass(Batch data);
 };
 
 #endif

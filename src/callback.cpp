@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+#include "aliases.hpp"
 #include "callback.hpp"
 #include "matrix.hpp"
 
@@ -9,7 +9,7 @@ Callback::Callback() {
 
 }
 
-float Callback::call(vector<vector<Matrix*>> y_pred, vector<vector<Matrix*>> y_true) {
+float Callback::call(Batch y_pred, Batch y_true) {
     // Implemented inside derivated functions
     cerr << "ERROR: Method not implemented in derived class" << endl;
     throw;

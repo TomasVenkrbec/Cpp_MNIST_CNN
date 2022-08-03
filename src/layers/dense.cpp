@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include "../aliases.hpp"
 #include "../layer.hpp"
 #include "../neuron.hpp"
 #include "../matrix.hpp"

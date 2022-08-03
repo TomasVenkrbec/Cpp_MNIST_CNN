@@ -1,7 +1,7 @@
 #ifndef ACCURACY_H
 #define ACCURACY_H
 
-#include <vector>
+#include "../aliases.hpp"
 #include "../callback.hpp"
 #include "../matrix.hpp"
 
@@ -17,7 +17,7 @@ public:
      * 
      * @return Accuracy of the model on given outputs and ground truth labels
      */
-    float call(std::vector<std::vector<Matrix*>> y_pred, std::vector<std::vector<Matrix*>> y_true);
+    float call(Batch y_pred, Batch y_true);
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include <iostream>
-#include <vector>
 #include <random>
+#include "../aliases.hpp"
 #include "../layer.hpp"
 #include "../neuron.hpp"
 #include "../matrix.hpp"
@@ -39,14 +39,14 @@ void Conv2D::calculate_output_shape(unsigned int input_shape[3]) {
     this->output_shape[2] = this->kernel_count;
 }
 
-vector<Matrix*> Conv2D::process_sample(vector<Matrix*> sample) {
+Sample Conv2D::process_sample(Sample sample) {
     // Create matrix for result, based on pre-calculated output shape, which already counts with padding
-    vector<Matrix*> res_sample;
+    Sample res_sample;
     Matrix* result_matrix = new Matrix(this->output_shape[0], this->output_shape[1]);
 
     // Get kernels from neurons
     vector<float> kernel_vector;
-    vector<Matrix*> kernel_matrices;
+    Sample kernel_matrices;
     vector<float> kernel_biases;
 
     for (auto a: this->get_neurons()) {

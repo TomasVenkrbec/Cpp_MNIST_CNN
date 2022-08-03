@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#include "aliases.hpp"
 #include "dataset.hpp"
 #include "matrix.hpp"
 
@@ -84,7 +85,7 @@ void DatasetLoader::reset_val_batch_generator() {
     this->current_sample_val = 0;
 }
 
-DataSample::DataSample(unsigned int label, vector<Matrix*> data) {
+DataSample::DataSample(unsigned int label, Sample data) {
     this->label = label;
     this->data = data;
 }
@@ -126,7 +127,7 @@ DataSample* parse_csv_line(string line, unsigned int max_label, unsigned int x_s
     }
 
     // Initialize data matrix
-    vector<Matrix*> data_matrix_vector;
+    Sample data_matrix_vector;
     for (unsigned i = 0; i < channels; i++) {
         Matrix* data_matrix = new Matrix(x_size, y_size);
         data_matrix->set_matrix_from_vector(data_channels[i]); // Correct resolution of data is checked within this function
@@ -196,7 +197,7 @@ DatasetLoader* get_dataset_loader(string dataset)
     }
 }
 
-std::vector<Matrix*> DataSample::get_data() {
+Sample DataSample::get_data() {
     return this->data;
 }
 

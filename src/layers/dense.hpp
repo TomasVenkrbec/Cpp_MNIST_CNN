@@ -1,7 +1,7 @@
 #ifndef DENSELAYER_H
 #define DENSELAYER_H
 
-#include <vector>
+#include "../aliases.hpp"
 #include "../layer.hpp"
 #include "../activation.hpp"
 #include "../activations/relu.hpp"

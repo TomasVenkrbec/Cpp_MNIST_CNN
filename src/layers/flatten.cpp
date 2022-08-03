@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+#include "../aliases.hpp"
 #include "../layer.hpp"
 #include "../neuron.hpp"
 #include "../matrix.hpp"
@@ -23,9 +23,9 @@ void Flatten::calculate_output_shape(unsigned int input_shape[3]) {
     this->output_shape[2] = 1;
 }   
 
-vector<Matrix*> Flatten::process_sample(vector<Matrix*> sample) {
+Sample Flatten::process_sample(Sample sample) {
     // Create data structures for result, based on pre-calculated output shape
-    vector<Matrix*> res_sample;
+    Sample res_sample;
     Matrix* result_matrix = new Matrix(this->output_shape[0], this->output_shape[1]);
 
     unsigned int sample_count = 0;

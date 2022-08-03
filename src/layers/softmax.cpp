@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+#include "../aliases.hpp"
 #include "../layer.hpp"
 #include "../neuron.hpp"
 #include "../matrix.hpp"
@@ -18,7 +18,7 @@ void Softmax::calculate_output_shape(unsigned int input_shape[3]) {
     this->output_shape[2] = input_shape[2];
 }   
 
-vector<Matrix*> Softmax::process_sample(vector<Matrix*> sample) {
+Sample Softmax::process_sample(Sample sample) {
     // Create data structures for result, based on pre-calculated output shape
     throw;
 }

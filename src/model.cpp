@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <vector>
 #include <cmath>
+#include "aliases.hpp"
 #include "model.hpp"
 #include "layer.hpp"
 #include "callback.hpp"
@@ -85,7 +86,7 @@ void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, ve
     }
 }
 
-vector<vector<Matrix*>> Model::forward_pass(vector<vector<Matrix*>> data) {
+Batch Model::forward_pass(Batch data) {
     // Pass input data to input layer and results to next layers
     Layer* cur_layer = this->input_layer;
     while (cur_layer != NULL) {
@@ -101,16 +102,16 @@ void Model::step() {
     vector<DataSample*> batch_data = this->dataset->get_train_batch();
 
     // Get data and labels from DataSample
-    vector<vector<Matrix*>> data;
-    vector<unsigned int> labels;
+    Batch data;
+    LabelsScalar labels;
     for (auto sample: batch_data) {
         data.push_back(sample->get_data());
         labels.push_back(sample->get_label());
     }
-    vector<vector<Matrix*>> labels_gt = one_hot(labels, this->dataset->get_max_label() + 1);
+    LabelsOneHot labels_gt = one_hot(labels, this->dataset->get_max_label() + 1);
     
     // Forward pass
-    vector<vector<Matrix*>> labels_pred = this->forward_pass(data);
+    LabelsOneHot labels_pred = this->forward_pass(data);
 
     // Call callbacks
     for (auto callback: this->callbacks) {

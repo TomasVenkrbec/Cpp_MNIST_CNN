@@ -2,13 +2,14 @@
 #define DATASET_H
 
 #include "matrix.hpp"
+#include "aliases.hpp"
 #include <string>
 #include <vector>
 
 class DataSample {
 private:
     unsigned int label;
-    std::vector<Matrix*> data; // Vector of matrices (channels)
+    Sample data; // Vector of matrices (channels)
 
 public:
     /**
@@ -28,7 +29,7 @@ public:
      * 
      * @return Vector of matrices (channels)
      */
-    std::vector<Matrix*> get_data();
+    Sample get_data();
 
     /**
      * @brief Get label value from sample

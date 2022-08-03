@@ -1,7 +1,7 @@
 #ifndef FLATTENLAYER_H
 #define FLATTENLAYER_H
 
-#include <vector>
+#include "../aliases.hpp"
 #include "../layer.hpp"
 #include "../matrix.hpp"
 
@@ -21,7 +21,7 @@ public:
      * @param sample Sample of input data
      * @return Output of layer operation on input sample
      */
-    std::vector<Matrix*> process_sample(std::vector<Matrix*> sample);
+    Sample process_sample(Sample sample);
 
     /**
      * @brief Calculate output shape of layer

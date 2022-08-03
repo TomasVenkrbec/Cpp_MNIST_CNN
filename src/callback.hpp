@@ -1,8 +1,8 @@
 #ifndef CALLBACK_H
 #define CALLBACK_H
 
-#include <vector>
 #include <string>
+#include "aliases.hpp"
 #include "matrix.hpp"
 
 class Callback {
@@ -19,7 +19,7 @@ public:
      * 
      * @return Accuracy of the model on given outputs and ground truth labels
      */
-    virtual float call(std::vector<std::vector<Matrix*>> y_pred, std::vector<std::vector<Matrix*>> y_true);
+    virtual float call(Batch y_pred, Batch y_true);
 };
 
 #endif

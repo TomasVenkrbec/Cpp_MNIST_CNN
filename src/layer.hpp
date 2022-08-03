@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "aliases.hpp"
 #include "neuron.hpp"
 #include "activation.hpp"
 #include "matrix.hpp"
@@ -103,7 +104,7 @@ public:
      * @param data Vector of vectors of channels - batch of feature maps
      * @return Batch of feature maps
      */
-    std::vector<std::vector<Matrix*>> forward(std::vector<std::vector<Matrix*>> data);
+    Batch forward(Batch data);
 
     /**
      * @brief Process one channel of input data
@@ -119,7 +120,7 @@ public:
      * @param sample Sample of input data
      * @return Output of layer operation on input sample
      */
-    virtual std::vector<Matrix*> process_sample(std::vector<Matrix*> sample);
+    virtual Sample process_sample(Sample sample);
 
     /**
      * @brief Calculate output shape of layer

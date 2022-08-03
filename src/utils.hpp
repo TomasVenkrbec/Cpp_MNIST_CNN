@@ -1,7 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <vector>
+#include "aliases.hpp"
 #include "matrix.hpp"
 
 /**
@@ -11,7 +11,7 @@
  * @param label_count Count of different possible labels
  * @return Batch of one-hot encoded labels 
  */
-std::vector<std::vector<Matrix*>> one_hot(std::vector<unsigned int> labels, unsigned int label_count);
+Batch one_hot(LabelsScalar labels, unsigned int label_count);
 
 /**
  * @brief Get the argmax of prediction
@@ -19,6 +19,6 @@ std::vector<std::vector<Matrix*>> one_hot(std::vector<unsigned int> labels, unsi
  * @param pred Network prediction or one-hot encoded label
  * @return Argmax of prediction
  */
-unsigned int get_argmax_pred(std::vector<Matrix*> pred);
+unsigned int get_argmax_pred(Sample pred);
 
 #endif

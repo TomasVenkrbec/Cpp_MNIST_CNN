@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+#include "aliases.hpp"
 #include "layer.hpp"
 #include "neuron.hpp"
 #include "matrix.hpp"
@@ -53,10 +53,10 @@ Activation* Layer::get_activation() {
     return this->activation;
 }
 
-vector<vector<Matrix*>> Layer::forward(vector<vector<Matrix*>> data) {
+Batch Layer::forward(Batch data) {
     // Data structures for results
-    vector<vector<Matrix*>> res_samples;
-    vector<Matrix*> res_sample;
+    Batch res_samples;
+    Sample res_sample;
     Matrix* res_channel;
 
     for (unsigned int i = 0; i < data.size(); i++) { // Iterate over samples from batch
@@ -94,7 +94,7 @@ Matrix* Layer::process_channel(Matrix* channel) {
     throw;
 }
 
-vector<Matrix*> Layer::process_sample(vector<Matrix*> sample) {
+Sample Layer::process_sample(Sample sample) {
     // Implemented inside derived classes
     cerr << "ERROR: Method not implemented in derived class" << endl;
     throw;

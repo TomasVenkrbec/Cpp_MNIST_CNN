@@ -1,13 +1,13 @@
-#include <vector>
+#include "aliases.hpp"
 #include "matrix.hpp"
 #include "utils.hpp"
 
 using namespace std;
 
-vector<vector<Matrix*>> one_hot(vector<unsigned int> labels, unsigned int label_count) {
+LabelsOneHot one_hot(LabelsScalar labels, unsigned int label_count) {
     // Prepare data structures
-    vector<vector<Matrix*>> res_samples;
-    vector<Matrix*> res_channel; // One channel
+    LabelsOneHot res_samples;
+    Sample res_channel; // One channel
 
     for (unsigned int i = 0; i < labels.size(); i++) {
         Matrix* res_one_hot = new Matrix(label_count, 1);
@@ -21,7 +21,7 @@ vector<vector<Matrix*>> one_hot(vector<unsigned int> labels, unsigned int label_
     return res_samples;
 }
 
-unsigned int get_argmax_pred(vector<Matrix*> pred) {
+unsigned int get_argmax_pred(Sample pred) {
     unsigned int idx_max = 0;
     float max = 0.0;
     for (unsigned int idx = 0; idx < pred[0]->get_x_size(); idx++) {
