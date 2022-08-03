@@ -25,6 +25,8 @@ src/activations/sigmoid.cpp \
 src/callback.cpp \
 src/callbacks/accuracy.cpp \
 \
+src/initializer.cpp \
+src/initializers/randomnormal.cpp \
 
 all:
 	@g++ -g $(SOURCE) -o train

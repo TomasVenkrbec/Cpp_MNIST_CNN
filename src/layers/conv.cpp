@@ -5,16 +5,18 @@
 #include "../neuron.hpp"
 #include "../matrix.hpp"
 #include "../activation.hpp"
+#include "../initializer.hpp"
 #include "conv.hpp"
 
 using namespace std;
 
-Conv2D::Conv2D(unsigned int kernel_size, unsigned int kernel_count, Activation *activation, bool padding) : Layer(kernel_size * kernel_size * kernel_count) {
+Conv2D::Conv2D(unsigned int kernel_size, unsigned int kernel_count, Activation* activation, bool padding, Initializer* initializer) : Layer(kernel_size * kernel_size * kernel_count) {
     this->name = "Conv2D";
     this->kernel_count = kernel_count;
     this->kernel_size = kernel_size;
     this->padding = padding;
     this->activation = activation;
+    this->initializer = initializer;
     this->process_by_channel = false;
 }
 
@@ -77,6 +79,7 @@ vector<Matrix*> Conv2D::process_sample(vector<Matrix*> sample) {
                     float result = sample[j]->convolve(kernel_matrices[i], x + start_x, y + start_y); // Get result of convolution
                     result += kernel_biases[i]; // Add bias (which is the same for all neurons from kernel)
                     result = this->activation->call(result); // Perform call of activation function
+                    
                     result_matrix->set_matrix(x, y, result_matrix->at(x, y) + result); // Add the value to matrix
                 }
             }
@@ -92,21 +95,16 @@ vector<Matrix*> Conv2D::process_sample(vector<Matrix*> sample) {
 void Conv2D::initialize_neurons() {
     this->trainable_weights_count = 0; // Reset the counter of trainable weights
 
-    // Weight initializer - normal distribution with mean = 0 and stddev = 1
-    normal_distribution<float> normal(0.0, 1.0);
-    random_device rd;
-    mt19937 gen(rd()); // Randomizer
-
     for (unsigned int i = 0; i < this->neurons.size(); i++) { // Iterate over neurons from current layer
         // Since there's one bias per kernel, the first neuron will contain the bias for entire kernel
         if (i % (this->kernel_size * this->kernel_size) == 0) {
             // Initialize bias randomly
-            this->neurons[i]->bias = normal(gen);
+            this->neurons[i]->bias = this->initializer->call();
             this->trainable_weights_count++;
         }
 
         // The number of kernel weights does not depend on previous layer - one weight per neuron
-        this->neurons[i]->weights.push_back(normal(gen)); // Initialize randomly
+        this->neurons[i]->weights.push_back(this->initializer->call()); // Initialize randomly
         this->neurons[i]->weights_d.push_back(0.0); // Default value
         this->trainable_weights_count++;
     }

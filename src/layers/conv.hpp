@@ -5,6 +5,8 @@
 #include "../layer.hpp"
 #include "../matrix.hpp"
 #include "../activation.hpp"
+#include "../initializer.hpp"
+#include "../initializers/randomnormal.hpp"
 
 class Conv2D: public Layer {
 private:
@@ -18,8 +20,11 @@ public:
      * 
      * @param kernel_size Size of kernel (kernel_size * kernel_size)
      * @param kernel_count Kernel (filter) count in layer
+     * @param activation Layer activation function
+     * @param initializer Layer neuron initializer
+     * @param padding Padding of layer
      */
-    Conv2D(unsigned int kernel_size, unsigned int kernel_count, Activation *activation, bool padding = true);
+    Conv2D(unsigned int kernel_size, unsigned int kernel_count, Activation *activation, bool padding = true, Initializer* initializer = new RandomNormal());
     
     /**
      * @brief Process sample with convolutional filters

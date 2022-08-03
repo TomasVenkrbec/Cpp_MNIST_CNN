@@ -6,11 +6,13 @@
 #include "neuron.hpp"
 #include "activation.hpp"
 #include "matrix.hpp"
+#include "initializer.hpp"
 
 class Layer {
 protected:
     std::vector<Neuron*> neurons;
     Activation* activation = NULL;
+    Initializer* initializer = NULL;
     Layer* prev_layer = NULL;
     Layer* next_layer = NULL;
     unsigned int output_shape[3];

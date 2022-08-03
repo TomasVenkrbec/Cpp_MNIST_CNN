@@ -9,8 +9,6 @@ public:
 
     /**
      * @brief Activation object constructor
-     * 
-     * @param name Activation function name
      */
     Activation();
 
