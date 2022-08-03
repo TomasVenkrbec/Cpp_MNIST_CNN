@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include "matrix.hpp"
 
 using namespace std;
@@ -6,17 +7,21 @@ using namespace std;
 Matrix::Matrix(unsigned int x_size, unsigned int y_size) {
     this->x_size = x_size;
     this->y_size = y_size;
-    this->data = new float*[this->x_size];
     for (unsigned int i = 0; i < this->x_size; i++) {
-        this->data[i] = new float[this->y_size];
+
+        vector<float> row;
+        for (unsigned int j = 0 ; j < this->y_size; j++) {
+            row.push_back(0.0); // Default value
+        }
+        this->data.push_back(row);
     }
 }
 
 Matrix::~Matrix() {
     for (unsigned int i = 0; i < this->x_size; i++) {
-        delete this->data[i];
+        delete &this->data[i];
     }
-    delete this->data;
+    delete &this->data;
 }
 
 unsigned int Matrix::get_x_size() {

@@ -65,8 +65,8 @@ vector<Matrix*> Conv2D::process_sample(vector<Matrix*> sample) {
     }
 
     int start_x, start_y;
-    if (this->padding) {
-        start_x = start_y = -(this->kernel_size - 1); // Add padding
+    if (this->padding) { // Add padding
+        start_x = start_y = (int) -(this->kernel_size - 1) / 2;
     }
     else {
         start_x = start_y = 0; // Start at beginning

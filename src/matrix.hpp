@@ -6,7 +6,7 @@
 class Matrix {
 private:
     unsigned int x_size, y_size;
-    float **data;
+    std::vector<std::vector<float>> data;
 
 public:
     /**
@@ -63,7 +63,7 @@ public:
     /**
      * @brief Calculate average value of matrix over area covered by kernel
      * 
-     * @param kernel Averging kernel
+     * @param kernel Averaging kernel
      * @param start_x x coordinate where start of kernel matrix will be 
      * @param start_y y coordinate where start of kernel matrix will be
      * @return Resulting average value
