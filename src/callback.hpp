@@ -5,33 +5,13 @@
 #include <queue>
 #include "aliases.hpp"
 #include "matrix.hpp"
+#include "utils.hpp"
 
 class Callback {
-private:
-    std::queue<float> moving_average_queue;
-    float moving_average_total = 0.0;
-
 protected:
-    unsigned int moving_average_samples = 1;
-
-    /**
-     * @brief Add value to moving average queue, if the queue is full, first element is popped
-     * 
-     * @param value Value to be added
-     */
-    void moving_average_add(float value);
-
-    /**
-     * @brief Get the moving average
-     * 
-     * @return Moving average of callback values
-     */
-    float moving_average_get();
-
-    /**
-     * @brief Reset the moving average
-     */
-    void moving_average_reset();
+    unsigned int epoch_count = 0;
+    float epoch_sum = 0.0;
+    MovingAverage* moving_average = NULL;
 
 public:
     std::string name;
@@ -42,9 +22,16 @@ public:
     Callback();
 
     /**
+     * @brief Get the average value over entire epoch
+     * 
+     * @return Average value during epoch
+     */
+    float get_epoch_avg();
+
+    /**
      * @brief Reset the callback
      */
-    virtual void reset();
+    void reset();
 
     /**
      * @brief Callback caller

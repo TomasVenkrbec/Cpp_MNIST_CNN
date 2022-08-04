@@ -4,12 +4,9 @@
 #include "../aliases.hpp"
 #include "../callback.hpp"
 #include "../matrix.hpp"
+#include "../utils.hpp"
 
 class Accuracy : public Callback {
-private:
-    unsigned int epoch_count = 0;
-    float epoch_sum = 0.0;
-
 public:
     /**
      * @brief Accuracy object constructor
@@ -24,13 +21,6 @@ public:
      * @return Accuracy of the model on given outputs and ground truth labels
      */
     float call(Batch y_pred, Batch y_true);
-
-    /**
-     * @brief Get the average accuracy over entire epoch
-     * 
-     * @return Average accuracy during epoch
-     */
-    float get_epoch_avg();
 
     /**
      * @brief Reset the callback
