@@ -6,6 +6,7 @@
 #include "layers/conv.hpp"
 #include "layers/avgpool.hpp"
 #include "layers/flatten.hpp"
+#include "layers/softmax.hpp"
 #include "losses/categoricalcrossentropy.hpp"
 #include "optimizers/adam.hpp"
 #include "activations/relu.hpp"
@@ -30,6 +31,7 @@ int main() {
     model.add_layer(new Dense(128, new ReLU()));
     model.add_layer(new Dense(32, new ReLU()));
     model.add_layer(new Dense(10, new Sigmoid()));
+    model.add_layer(new Softmax());
     
     // Load data
     DatasetLoader* dataset = get_dataset_loader("mnist");

@@ -121,6 +121,10 @@ void Model::step() {
         float cb_res = callback->call(labels_pred, labels_gt);
         cout << ", " << callback->name << ": " << setprecision(2) << cb_res;
     }
+
+    // Calculate loss
+    float loss = this->loss->call(labels_pred, labels_gt);
+    cout << ", Loss: " << setprecision(2) << loss;
 }
 
 void Model::train() {
@@ -147,6 +151,7 @@ void Model::validate() {
         // Get batch of validation data
         vector<DataSample*> batch_data = this->dataset->get_val_batch();
 
+        // TODO: Merge this part with training, so it's not the same code twice
         // Get data and labels from DataSample
         Batch data;
         LabelsScalar labels;
@@ -161,6 +166,10 @@ void Model::validate() {
             float cb_res = callback->call(labels_pred, labels_gt);
             cout << ", " << callback->name << ": " << setprecision(2) << cb_res;
         }
+
+        // Calculate loss
+        float loss = this->loss->call(labels_pred, labels_gt);
+        cout << ", Loss: " << setprecision(2) << loss;
 
         cout.flush();
         cout << "\r"; // Move cursor to beginning of line
