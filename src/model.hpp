@@ -13,6 +13,7 @@
 class Model {
 private:
     Layer* input_layer = NULL;
+    Layer* output_layer = NULL;
     unsigned int* input_shape;
     DatasetLoader* dataset;
     Optimizer* optimizer;
@@ -84,6 +85,11 @@ public:
      * @return Batch of feature maps, model output given input data
      */
     Batch forward_pass(Batch data);
+
+    /**
+     * @brief Perform backpropagation of model
+     */
+    void backprop();
 };
 
 #endif

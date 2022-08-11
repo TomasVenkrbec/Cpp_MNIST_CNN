@@ -2,10 +2,14 @@
 #define LOSS_H
 
 #include <string>
+#include <vector>
 #include "aliases.hpp"
 #include "callback.hpp"
 
 class Loss : public Callback {
+protected:
+    std::vector<float> loss_values;
+
 public:
     std::string name;
 
@@ -15,13 +19,21 @@ public:
     Loss();
 
     /**
-     * @brief Get the loss value
+     * @brief Calculate the loss value
      * 
      * @param y_pred Batch of predicted labels
      * @param y_true Batch of ground truth labels 
-     * @return Calculated loss
      */
-    virtual float call(Batch y_pred, Batch y_true);
+    virtual void call(Batch y_pred, Batch y_true);
+
+    /**
+     * @brief Get the vector of derivatives
+     * 
+     * @param y_pred Batch of predicted labels
+     * @param y_true Batch of ground truth labels 
+     * @return Vector of vectors of derivatives (vector for every sample from batch)
+     */
+    virtual std::vector<std::vector<float>> get_derivatives(Batch y_pred, Batch y_true);
 };
 
 #endif

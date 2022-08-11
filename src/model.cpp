@@ -13,15 +13,12 @@ using namespace std;
 void Model::add_layer(Layer* layer) {
     if (this->input_layer == NULL) {
         this->input_layer = layer;
+        this->output_layer = layer;
     } 
     else {
-        Layer* cur_layer = this->input_layer;
-
-        while (cur_layer->get_next_layer() != NULL) {
-            cur_layer = cur_layer->get_next_layer();
-        }
-        cur_layer->add_next_layer(layer);
-        layer->add_prev_layer(cur_layer);
+        this->output_layer->add_next_layer(layer);
+        layer->add_prev_layer(this->output_layer);
+        this->output_layer = layer;
     }
 }
 
@@ -103,6 +100,10 @@ Batch Model::forward_pass(Batch data) {
     return data;
 }
 
+void Model::backprop() {
+
+}
+
 void Model::step() {
     // Get batch of training data
     vector<DataSample*> batch_data = this->dataset->get_train_batch();
@@ -118,13 +119,18 @@ void Model::step() {
 
     // Call callbacks
     for (auto callback: this->callbacks) {
-        float cb_res = callback->call(labels_pred, labels_gt);
+        callback->call(labels_pred, labels_gt);
+        float cb_res = callback->get_moving_avg();
         cout << ", " << callback->name << ": " << setprecision(2) << cb_res;
     }
 
     // Calculate loss
-    float loss = this->loss->call(labels_pred, labels_gt);
+    this->loss->call(labels_pred, labels_gt);
+    float loss = this->loss->get_moving_avg();
     cout << ", Loss: " << setprecision(2) << loss;
+
+    // Perform backpropagation
+    this->backprop();
 }
 
 void Model::train() {
@@ -136,7 +142,7 @@ void Model::train() {
         this->step(); // Perform training step
 
         cout.flush();
-        cout << "\r"; // Move cursor to beginning of line
+        cout << "\t\t\r"; // Move further in line (to clear everything properly) and move cursor to beginning of line
     }
 }
 
@@ -163,16 +169,18 @@ void Model::validate() {
 
         // Call callbacks
         for (auto callback: this->callbacks) {
-            float cb_res = callback->call(labels_pred, labels_gt);
+            callback->call(labels_pred, labels_gt);
+            float cb_res = callback->get_epoch_avg();
             cout << ", " << callback->name << ": " << setprecision(2) << cb_res;
         }
 
         // Calculate loss
-        float loss = this->loss->call(labels_pred, labels_gt);
+        this->loss->call(labels_pred, labels_gt);
+        float loss = this->loss->get_epoch_avg();
         cout << ", Loss: " << setprecision(2) << loss;
 
         cout.flush();
-        cout << "\r"; // Move cursor to beginning of line
+        cout << "\t\t\r"; // Move further in line (to clear everything properly) and move cursor to beginning of line
     }
 }
 

@@ -12,7 +12,7 @@ Accuracy::Accuracy(unsigned int moving_average_samples) : Callback() {
     this->moving_average = new MovingAverage(moving_average_samples);
 }
 
-float Accuracy::call(Batch y_pred, Batch y_true) {
+void Accuracy::call(Batch y_pred, Batch y_true) {
     unsigned int hits = 0; // Correct prediction count
     
     for(unsigned int i = 0; i < y_pred.size(); i++) { // Iterate over samples
@@ -29,6 +29,4 @@ float Accuracy::call(Batch y_pred, Batch y_true) {
 
     // Add towards moving average
     this->moving_average->add(accuracy);
-
-    return this->moving_average->get();
 }

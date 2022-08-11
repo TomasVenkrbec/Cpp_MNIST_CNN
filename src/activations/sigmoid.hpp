@@ -17,6 +17,14 @@ public:
      * @return Activation of neuron
      */
     float call(float u);
+
+    /**
+     * @brief Get the derivation of sigmoid function wrt given activation
+     * 
+     * @param activation Activation value
+     * @return Sigmoid function derivative
+     */
+    float get_derivative(float activation);
 };
 
 #endif

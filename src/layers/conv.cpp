@@ -105,7 +105,6 @@ void Conv2D::initialize_neurons() {
 
         // The number of kernel weights does not depend on previous layer - one weight per neuron
         this->neurons[i]->weights.push_back(this->initializer->call()); // Initialize randomly
-        this->neurons[i]->weights_d.push_back(0.0); // Default value
         this->trainable_weights_count++;
     }
 }

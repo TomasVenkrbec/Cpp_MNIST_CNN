@@ -10,7 +10,7 @@ Callback::Callback() {
 
 }
 
-float Callback::call(Batch y_pred, Batch y_true) {
+void Callback::call(Batch y_pred, Batch y_true) {
     // Implemented inside derivated functions
     cerr << "ERROR: Method not implemented in derived class" << endl;
     throw;
@@ -26,4 +26,8 @@ void Callback::reset() {
 
 float Callback::get_epoch_avg() {
     return this->epoch_sum / this->epoch_count;
+}
+
+float Callback::get_moving_avg() {
+    return this->moving_average->get();
 }

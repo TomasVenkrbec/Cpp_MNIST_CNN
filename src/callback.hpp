@@ -29,16 +29,21 @@ public:
     float get_epoch_avg();
 
     /**
+     * @brief Get the average value over selected value of last samples
+     * 
+     * @return Moving average value during epoch
+     */
+    float get_moving_avg();
+
+    /**
      * @brief Reset the callback
      */
     void reset();
 
     /**
      * @brief Callback caller
-     * 
-     * @return Accuracy of the model on given outputs and ground truth labels
      */
-    virtual float call(Batch y_pred, Batch y_true);
+    virtual void call(Batch y_pred, Batch y_true);
 };
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef CATEGORICALCROSSENTROPY_H
 #define CATEGORICALCROSSENTROPY_H
 
+#include <vector>
 #include "../loss.hpp"
 #include "../callback.hpp"
 #include "../aliases.hpp"
@@ -15,13 +16,21 @@ public:
     CategoricalCrossentropy(unsigned int moving_average_samples = 1);
 
     /**
-     * @brief Get the loss value
+     * @brief Calculate the loss value
      * 
      * @param y_pred Batch of predicted labels
      * @param y_true Batch of ground truth labels 
-     * @return Calculated categorical cross-entropy loss
      */
-    float call(Batch y_pred, Batch y_true);
+    void call(Batch y_pred, Batch y_true);
+
+    /**
+     * @brief Get the vector of derivatives
+     * 
+     * @param y_pred Batch of predicted labels
+     * @param y_true Batch of ground truth labels 
+     * @return Vector of vectors of derivatives (vector for every sample from batch)
+     */
+    std::vector<std::vector<float>> get_derivatives(Batch y_pred, Batch y_true);
 };
 
 

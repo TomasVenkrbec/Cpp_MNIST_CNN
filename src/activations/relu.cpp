@@ -12,3 +12,12 @@ float ReLU::call(float u) {
         return u;
     }
 } 
+
+float ReLU::get_derivative(float activation) {
+    if (activation < 0) {
+        return 0.0;
+    }
+    else {
+        return 1.0;
+    }
+}

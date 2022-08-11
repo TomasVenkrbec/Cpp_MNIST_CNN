@@ -19,6 +19,14 @@ public:
      * @return Activation of neuron
      */
     virtual float call(float u);
+
+    /**
+     * @brief Get the derivation of activation function wrt given activation
+     * 
+     * @param activation Activation value
+     * @return Activation function derivative
+     */
+    virtual float get_derivative(float activation);
 };
 
 #endif

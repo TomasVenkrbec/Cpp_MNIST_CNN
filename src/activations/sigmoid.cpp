@@ -9,4 +9,9 @@ Sigmoid::Sigmoid() : Activation() {
 
 float Sigmoid::call(float u) {
     return 1 / (1 + exp(-u));
-} 
+}
+
+float Sigmoid::get_derivative(float activation) {
+    // Derivative = sigmoid(activation) * (1 - sigmoid(activation))
+    return this->call(activation) * (1 - this->call(activation));
+}
