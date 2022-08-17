@@ -44,3 +44,13 @@ Matrix* AvgPool::process_channel(Matrix* data) {
 
     return result_matrix;
 }
+
+void AvgPool::initialize_neurons() {
+    // Since the shape depends entirely on last layer and kernel size, the neurons will be added now instead of in base class constructor
+    for (unsigned int i = 0; i < this->output_shape[0] * this->output_shape[1] * this->output_shape[2]; i++) {
+        Neuron *neuron = new Neuron;
+        this->neurons.push_back(neuron);
+    }
+    
+    // Since the layer has no learnable parameters, there's no need to further initialization of the neurons
+}

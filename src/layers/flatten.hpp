@@ -29,6 +29,11 @@ public:
      * @param input_shape Input shape ([x,y,channels])
      */
     void calculate_output_shape(unsigned int input_shape[3]); 
+
+    /**
+     * @brief Initialize neurons of layer
+     */
+    void initialize_neurons();
 };
 
 #endif

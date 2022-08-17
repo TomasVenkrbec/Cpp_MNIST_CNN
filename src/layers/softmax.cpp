@@ -30,3 +30,13 @@ Sample Softmax::process_sample(Sample sample) {
 
     return sample;
 }
+
+void Softmax::initialize_neurons() {
+    // Since the shape depends entirely on last layer, the neurons will be added now instead of in base class constructor
+    for (unsigned int i = 0; i < this->get_prev_layer()->get_neuron_count(); i++) {
+        Neuron *neuron = new Neuron;
+        this->neurons.push_back(neuron);
+    }
+    
+    // Since the layer has no learnable parameters, there's no need to further initialization of the neurons
+}
