@@ -19,9 +19,9 @@ Matrix::Matrix(unsigned int x_size, unsigned int y_size) {
 
 Matrix::~Matrix() {
     for (unsigned int i = 0; i < this->x_size; i++) {
-        delete &this->data[i];
+        this->data[i].clear();
     }
-    delete &this->data;
+    this->data.clear();
 }
 
 unsigned int Matrix::get_x_size() {

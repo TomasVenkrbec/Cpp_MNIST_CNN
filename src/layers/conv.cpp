@@ -89,6 +89,8 @@ Sample Conv2D::process_sample(Sample sample) {
         result_matrix = new Matrix(this->output_shape[0], this->output_shape[1]);
     }
 
+    // TODO: Clear data from mmemory once backpropagation for Conv layers is finished and will be possible to test with valgrind
+
     return res_sample;
 }
 

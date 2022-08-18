@@ -42,6 +42,9 @@ Matrix* Dense::process_channel(Matrix* data) {
         neurons[i]->activation.push_back(result);
         result_matrix->set_matrix(i, 0, result); 
     }
+    
+    // Clear input data from memory
+    delete data;
 
     return result_matrix;
 }

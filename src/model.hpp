@@ -58,9 +58,12 @@ public:
     void fit(unsigned int max_epochs);
 
     /**
-     * @brief Perform single training step
+     * @brief Perform single step (training or validation)
+     * 
+     * @param batch_data Batch of data
+     * @param is_training Whether or not the training will happen, or only validation
      */
-    void step();
+    void step(std::vector<DataSample*> batch_data, bool is_training);
 
     /**
      * @brief Train model for 1 epoch

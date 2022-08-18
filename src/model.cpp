@@ -118,6 +118,9 @@ void Model::update_weights() {
                 // Clear derivative
                 cur_layer_neurons[i]->weights_g[j] = 0.0;
             }
+
+            // Clear neuron derivative
+            cur_layer_neurons[i]->derivative = 0.0;
         }
 
         // Get next layer
@@ -135,15 +138,18 @@ void Model::backprop(Batch y_pred, Batch y_true) {
         // Calculate derivative of last layer activation given the loss derivative
         vector<Neuron*> cur_layer_neurons = cur_layer->get_neurons();
         for (unsigned int j = 0; j < cur_layer_neurons.size(); j++) { 
-            float activation_d = cur_layer->get_activation_derivative(cur_layer_neurons[j]->activation[i]); // Get derivative of neuron activation
-            
-            cur_layer_neurons[j]->derivative = activation_d * loss_derivatives[j]; // Calculate total derivative and save it
+            cur_layer_neurons[j]->derivative = loss_derivatives[j]; // Calculate total derivative and save it
         }
 
         // Calculate derivatives of weights and biases for all the layers
         while(cur_layer->get_prev_layer() != NULL) { // End at input layer
             // Get neurons from previous layer
             vector<Neuron*> prev_layer_neurons = cur_layer->get_prev_layer()->get_neurons();
+
+            // Calculate derivatives of neuron activation
+            for (unsigned int j = 0; j < cur_layer_neurons.size(); j++) {
+                cur_layer_neurons[j]->derivative *= cur_layer->get_activation_derivative(cur_layer_neurons[j]->activation[i]);
+            }
 
             // Calculate derivative for bias of neurons from current layer
             for (unsigned int j = 0; j < cur_layer_neurons.size(); j++) { // All neurons from current layer
@@ -188,10 +194,7 @@ void Model::backprop(Batch y_pred, Batch y_true) {
     }
 }
 
-void Model::step() {
-    // Get batch of training data
-    vector<DataSample*> batch_data = this->dataset->get_train_batch();
-
+void Model::step(vector<DataSample*> batch_data, bool is_training) {
     // Get data and labels from DataSample
     Batch data;
     LabelsScalar labels;
@@ -204,20 +207,42 @@ void Model::step() {
     // Call callbacks
     for (auto callback: this->callbacks) {
         callback->call(labels_pred, labels_gt);
-        float cb_res = callback->get_moving_avg();
+        float cb_res;
+        if (is_training) { // During training, get moving average
+            cb_res = callback->get_moving_avg();
+        }
+        else { // During validation, prefer average of all samples
+            cb_res = callback->get_epoch_avg();
+        }
         cout << ", " << callback->name << ": " << fixed << setprecision(3) << cb_res;
     }
 
     // Calculate loss
     this->loss->call(labels_pred, labels_gt);
-    float loss = this->loss->get_moving_avg();
+    float loss;
+    if (is_training) { // During training, get moving average
+        loss = this->loss->get_moving_avg();
+    }
+    else { // During validation, prefer average of all samples
+        loss = this->loss->get_epoch_avg();
+    }
     cout << ", Loss: " << fixed << setprecision(3) << loss;
 
-    // Perform backpropagation
-    this->backprop(labels_pred, labels_gt);
+    if (is_training) { // Don't learn during validation
+        // Perform backpropagation
+        this->backprop(labels_pred, labels_gt);
 
-    // Update weights
-    this->update_weights();
+        // Update weights
+        this->update_weights();
+    }
+
+    // Clear ground truth labels and predicted labels from memory 
+    for (unsigned int i = 0; i < labels_gt.size(); i++) { // Iterate over samples
+        for (unsigned int j = 0; j < labels_gt[i].size(); j++) { // Iterate over individual label values
+            delete labels_gt[i][j];
+            delete labels_pred[i][j];
+        }
+    }
 }
 
 void Model::train() {
@@ -226,7 +251,12 @@ void Model::train() {
     this->dataset->reset_train_batch_generator(); // Reset training batch generator
     for (unsigned int step = 1; step <= steps_per_epoch; step++) { 
         cout << "Step: " << step << "/" << steps_per_epoch;
-        this->step(); // Perform training step
+
+        // Get batch of training data
+        vector<DataSample*> batch_data = this->dataset->get_train_batch();
+        
+        // Perform training step
+        this->step(batch_data, true);
 
         cout.flush();
         cout << "\t\t\r"; // Move further in line (to clear everything properly) and move cursor to beginning of line
@@ -244,27 +274,8 @@ void Model::validate() {
         // Get batch of validation data
         vector<DataSample*> batch_data = this->dataset->get_val_batch();
 
-        // TODO: Merge this part with training, so it's not the same code twice
-        // Get data and labels from DataSample
-        Batch data;
-        LabelsScalar labels;
-        parse_datasample(batch_data, &data, &labels);
-        LabelsOneHot labels_gt = one_hot(labels, this->dataset->get_max_label() + 1);
-        
-        // Forward pass
-        LabelsOneHot labels_pred = this->forward_pass(data);
-
-        // Call callbacks
-        for (auto callback: this->callbacks) {
-            callback->call(labels_pred, labels_gt);
-            float cb_res = callback->get_epoch_avg();
-            cout << ", " << callback->name << ": " << fixed << setprecision(3) << cb_res;
-        }
-
-        // Calculate loss
-        this->loss->call(labels_pred, labels_gt);
-        float loss = this->loss->get_epoch_avg();
-        cout << ", Loss: " << fixed << setprecision(3) << loss;
+        // Perform validation step
+        this->step(batch_data, false);
 
         cout.flush();
         cout << "\t\t\r"; // Move further in line (to clear everything properly) and move cursor to beginning of line
