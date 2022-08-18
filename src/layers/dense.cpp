@@ -39,7 +39,7 @@ Matrix* Dense::process_channel(Matrix* data) {
         result = this->activation->call(result); // Call activation function
         
         // Save the value
-        neurons[i]->activation = result;
+        neurons[i]->activation.push_back(result);
         result_matrix->set_matrix(i, 0, result); 
     }
 
@@ -63,4 +63,8 @@ void Dense::initialize_neurons() {
         this->neurons[i]->bias = this->initializer->call();
         this->trainable_weights_count++;
     }
+}
+
+float Dense::get_activation_derivative(float activation) {
+    return this->activation->get_derivative(activation);
 }

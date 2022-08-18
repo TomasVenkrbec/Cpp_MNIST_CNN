@@ -45,6 +45,14 @@ public:
      * @brief Initialize neurons of layer
      */
     void initialize_neurons();
+
+    /**
+     * @brief Get derivative of activation function given activation value
+     * 
+     * @param activation Value of activation
+     * @return Activation derivative
+     */
+    float get_activation_derivative(float activation);
 };
 
 #endif

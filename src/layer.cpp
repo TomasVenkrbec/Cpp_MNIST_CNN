@@ -58,6 +58,11 @@ Batch Layer::forward(Batch data) {
     Batch res_samples;
     Sample res_sample;
     Matrix* res_channel;
+    
+    // Clear previous activations from all neurons
+    for (unsigned int i = 0; i < this->neurons.size(); i++) {
+        this->neurons[i]->activation.clear();
+    }
 
     for (unsigned int i = 0; i < data.size(); i++) { // Iterate over samples from batch
         if (process_by_channel) { // Process image channel-by-channel
@@ -110,4 +115,10 @@ void Layer::initialize_neurons() {
     // Implemented inside derived classes    
     cerr << "ERROR: Method not implemented in derived class" << endl;
     throw;
+}
+
+float Layer::get_activation_derivative(float activation) {
+    // Implemented inside derived classes    
+    cerr << "ERROR: Method not implemented in derived class" << endl;
+    throw;   
 }

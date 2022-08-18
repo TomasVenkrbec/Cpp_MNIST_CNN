@@ -26,6 +26,7 @@ Sample Softmax::process_sample(Sample sample) {
 
     for (unsigned int i = 0; i < sample[0]->get_x_size(); i++) { // Iterate over rows (logits) and normalize the values using calculated sum
         sample[0]->set_matrix(i, 0, sample[0]->at(i, 0) / sum); // Normalize the value and save it
+        this->neurons[i]->activation.push_back(sample[0]->at(i, 0)); // Save the result to neurons
     }
 
     return sample;
@@ -39,4 +40,8 @@ void Softmax::initialize_neurons() {
     }
     
     // Since the layer has no learnable parameters, there's no need to further initialization of the neurons
+}
+
+float Softmax::get_activation_derivative(float activation) {
+    return activation; // Since the layer in current form does only scaling, result depends only on activation
 }

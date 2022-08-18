@@ -5,7 +5,7 @@
 
 class Neuron {
 public:
-    float activation = 0.0;
+    std::vector<float> activation; // Save results as a vector, because it's needed for backpropagation later
     float bias = 0.0;
     std::vector<float> weights;
     float derivative = 0.0; // Derivative of this neuron, according to chain rule

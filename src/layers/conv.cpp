@@ -97,7 +97,7 @@ void Conv2D::initialize_neurons() {
 
     for (unsigned int i = 0; i < this->neurons.size(); i++) { // Iterate over neurons from current layer
         // Since there's one bias per kernel, the first neuron will contain the bias for entire kernel
-        if (i % (this->kernel_size * this->kernel_size) == 0) {
+        if (i % (this->kernel_size * this->kernel_size) == 0) { // TODO: All neurons from kernel will contain a pointer to the same bias value instead of this
             // Initialize bias randomly
             this->neurons[i]->bias = this->initializer->call();
             this->trainable_weights_count++;
@@ -107,4 +107,8 @@ void Conv2D::initialize_neurons() {
         this->neurons[i]->weights.push_back(this->initializer->call()); // Initialize randomly
         this->trainable_weights_count++;
     }
+}
+
+float Conv2D::get_activation_derivative(float activation) {
+    return this->activation->get_derivative(activation);
 }

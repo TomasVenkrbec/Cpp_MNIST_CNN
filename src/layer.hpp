@@ -21,6 +21,7 @@ protected:
     bool process_by_channel = true; // true - process image channel by channel, false - process image sample by sample
 
 public:
+    unsigned int batch_size;
     std::string name;
 
     /**
@@ -133,6 +134,14 @@ public:
      * @brief Initialize neurons of layer
      */
     virtual void initialize_neurons();
+
+    /**
+     * @brief Get derivative of activation function given activation value
+     * 
+     * @param activation Value of activation
+     * @return Activation derivative
+     */
+    virtual float get_activation_derivative(float activation);
 };
 
 #endif

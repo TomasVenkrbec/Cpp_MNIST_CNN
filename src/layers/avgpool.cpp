@@ -39,6 +39,7 @@ Matrix* AvgPool::process_channel(Matrix* data) {
         for (int j = 0; j < data->get_y_size(); j += this->kernel_size) { // Move kernel over cols from data
             float result = data->get_avg(kernel, i, j); // Get average in masked area
             result_matrix->set_matrix(i / this->kernel_size, j / this->kernel_size, result); // Save the average to corresponding position
+            this->neurons[i * data->get_x_size() + j]->activation.push_back(result);
         }
     }
 
@@ -53,4 +54,8 @@ void AvgPool::initialize_neurons() {
     }
     
     // Since the layer has no learnable parameters, there's no need to further initialization of the neurons
+}
+
+float AvgPool::get_activation_derivative(float activation) {
+    return activation; 
 }
