@@ -17,6 +17,7 @@ src/losses/categoricalcrossentropy.cpp \
 \
 src/optimizer.cpp \
 src/optimizers/adam.cpp \
+src/optimizers/sgd.cpp \
 \
 src/activation.cpp \
 src/activations/relu.cpp \

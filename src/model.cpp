@@ -33,6 +33,7 @@ void Model::print_model() {
 
     unsigned int layer_count = 0;
     unsigned int trainable_weights_count = 0;
+    unsigned int neuron_count = 0;
     Layer *cur_layer = this->input_layer;
     cout << "Network structure:" << endl;
     cout << "Input size: (" << this->dataset->get_resolution() << "," << this->dataset->get_resolution() << "," << this->dataset->get_channels() << ")" << endl; 
@@ -40,6 +41,7 @@ void Model::print_model() {
         cout << "Layer " << ++layer_count << ": " << cur_layer->name << endl;
         if (cur_layer->get_neuron_count() > 0) {
             cout << "\t Neuron count: " << cur_layer->get_neuron_count() << endl;
+            neuron_count += cur_layer->get_neuron_count();
             cout << "\t Trainable weights: " << cur_layer->get_trainable_weights_count() << endl;
             trainable_weights_count += cur_layer->get_trainable_weights_count();
         }
@@ -50,7 +52,8 @@ void Model::print_model() {
         cur_layer = cur_layer->get_next_layer();
     }
 
-    cout << "Total number of trainable weights: " << trainable_weights_count << endl << endl;
+    cout << "Total number of neurons: " << neuron_count << endl;
+    cout << "Total number of trainable weights: " << trainable_weights_count << endl;
 }
 
 void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, vector<Callback*> callbacks) {
@@ -75,9 +78,8 @@ void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, ve
         cur_layer->calculate_output_shape(output_shape);
         output_shape = cur_layer->get_output_shape(); // Get output shape as input shape for next layer
 
-        if (cur_layer->get_neuron_count() > 0) { // If the layer has neurons, initialize them
-            cur_layer->initialize_neurons();
-        }
+        cur_layer->batch_size = this->dataset->batch_size;
+        cur_layer->initialize_neurons();
 
         cur_layer = cur_layer->get_next_layer();
     }
@@ -100,8 +102,90 @@ Batch Model::forward_pass(Batch data) {
     return data;
 }
 
-void Model::backprop() {
+void Model::update_weights() {
+    Layer* cur_layer = this->input_layer;
+    while (cur_layer != NULL) {
+        vector<Neuron*> cur_layer_neurons = cur_layer->get_neurons();
+        for (unsigned int i = 0; i < cur_layer_neurons.size(); i++) { // All neurons from current layer
+            // Update bias
+            cur_layer_neurons[i]->bias += this->optimizer->call(cur_layer_neurons[i]->bias_g / this->dataset->batch_size);
+            // Clear derivative
+            cur_layer_neurons[i]->bias_g = 0.0;
 
+            // Update weights
+            for (unsigned int j = 0; j < cur_layer_neurons[i]->weights.size(); j++) { // All weights from current neuron
+                cur_layer_neurons[i]->weights[j] += this->optimizer->call(cur_layer_neurons[i]->weights_g[j] / this->dataset->batch_size);
+                // Clear derivative
+                cur_layer_neurons[i]->weights_g[j] = 0.0;
+            }
+        }
+
+        // Get next layer
+        cur_layer = cur_layer->get_next_layer();
+    }
+}
+
+void Model::backprop(Batch y_pred, Batch y_true) {
+    vector<vector<float>> loss_derivatives_batch = this->loss->get_derivatives(y_pred, y_true); // Get derivatives for last layer
+
+    for (unsigned int i = 0; i < y_pred.size(); i++) { // For every sample from batch
+        Layer* cur_layer = this->output_layer; // Start from last layer
+        vector<float> loss_derivatives = loss_derivatives_batch[i]; // Get loss derivatives for current sample
+        
+        // Calculate derivative of last layer activation given the loss derivative
+        vector<Neuron*> cur_layer_neurons = cur_layer->get_neurons();
+        for (unsigned int j = 0; j < cur_layer_neurons.size(); j++) { 
+            float activation_d = cur_layer->get_activation_derivative(cur_layer_neurons[j]->activation[i]); // Get derivative of neuron activation
+            
+            cur_layer_neurons[j]->derivative = activation_d * loss_derivatives[j]; // Calculate total derivative and save it
+        }
+
+        // Calculate derivatives of weights and biases for all the layers
+        while(cur_layer->get_prev_layer() != NULL) { // End at input layer
+            // Get neurons from previous layer
+            vector<Neuron*> prev_layer_neurons = cur_layer->get_prev_layer()->get_neurons();
+
+            // Calculate derivative for bias of neurons from current layer
+            for (unsigned int j = 0; j < cur_layer_neurons.size(); j++) { // All neurons from current layer
+                cur_layer_neurons[j]->bias_g += cur_layer_neurons[j]->derivative;
+            }
+
+            // Calculate derivatives for all weights of neurons from current layer
+            for (unsigned int j = 0; j < cur_layer_neurons.size(); j++) { // All neurons from current layer
+                for (unsigned int k = 0; k < cur_layer_neurons[j]->weights.size(); k++) { // All weights from current neuron
+                    cur_layer_neurons[j]->weights_g[k] += prev_layer_neurons[k]->activation[i] * cur_layer_neurons[j]->derivative;
+                }
+            }
+
+            // Calculate activation derivatives for all neurons from previous layer
+            for (unsigned int j = 0; j < prev_layer_neurons.size(); j++) { // For every neuron of previous layer
+                for (unsigned int k = 0; k < cur_layer_neurons.size(); k++) { // For every neuron of current layer
+                    // Activation derivative of neuron from previous layer depends on every neuron from the current layer
+                    if (cur_layer_neurons[k]->weights.size() == 0) { // If the neuron has no weights, just pass through
+                        if (cur_layer_neurons.size() == prev_layer_neurons.size()) { // Can work only for layers doing certain transformations
+                            prev_layer_neurons[j]->derivative = cur_layer_neurons[j]->derivative;
+                            break;
+                        }
+                        else {
+                            throw; // Should not be possible
+                        }
+                    }
+                    else {
+                        prev_layer_neurons[j]->derivative += cur_layer_neurons[k]->weights[j] * cur_layer_neurons[k]->derivative;
+                    }
+                }
+            }
+
+            // Clear derivatives of current layer
+            for (unsigned int j = 0; j < cur_layer_neurons.size(); j++) {
+                cur_layer_neurons[j]->derivative = 0.0;
+            }
+
+            // Move one layer back
+            cur_layer = cur_layer->get_prev_layer();
+            cur_layer_neurons = cur_layer->get_neurons();
+        }
+    }
 }
 
 void Model::step() {
@@ -121,16 +205,19 @@ void Model::step() {
     for (auto callback: this->callbacks) {
         callback->call(labels_pred, labels_gt);
         float cb_res = callback->get_moving_avg();
-        cout << ", " << callback->name << ": " << setprecision(2) << cb_res;
+        cout << ", " << callback->name << ": " << fixed << setprecision(3) << cb_res;
     }
 
     // Calculate loss
     this->loss->call(labels_pred, labels_gt);
     float loss = this->loss->get_moving_avg();
-    cout << ", Loss: " << setprecision(2) << loss;
+    cout << ", Loss: " << fixed << setprecision(3) << loss;
 
     // Perform backpropagation
-    this->backprop();
+    this->backprop(labels_pred, labels_gt);
+
+    // Update weights
+    this->update_weights();
 }
 
 void Model::train() {
@@ -171,13 +258,13 @@ void Model::validate() {
         for (auto callback: this->callbacks) {
             callback->call(labels_pred, labels_gt);
             float cb_res = callback->get_epoch_avg();
-            cout << ", " << callback->name << ": " << setprecision(2) << cb_res;
+            cout << ", " << callback->name << ": " << fixed << setprecision(3) << cb_res;
         }
 
         // Calculate loss
         this->loss->call(labels_pred, labels_gt);
         float loss = this->loss->get_epoch_avg();
-        cout << ", Loss: " << setprecision(2) << loss;
+        cout << ", Loss: " << fixed << setprecision(3) << loss;
 
         cout.flush();
         cout << "\t\t\r"; // Move further in line (to clear everything properly) and move cursor to beginning of line
@@ -186,7 +273,7 @@ void Model::validate() {
 
 void Model::fit(unsigned int max_epochs) {
     for (unsigned int epoch = 1; epoch <= max_epochs; epoch++) {
-        cout << "Epoch: " << epoch << "/" << max_epochs << endl;
+        cout << endl << "Epoch: " << epoch << "/" << max_epochs << endl;
         this->train(); // Perform training for 1 epoch
         cout << endl; // New line to not delete the training progress bar
         this->validate(); // Perform validation

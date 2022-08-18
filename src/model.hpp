@@ -88,8 +88,15 @@ public:
 
     /**
      * @brief Perform backpropagation of model
+     * @param y_pred Batch of predicted labels
+     * @param y_true Batch of ground truth labels 
      */
-    void backprop();
+    void backprop(Batch y_pred, Batch y_true);
+
+    /**
+     * @brief Update all weights of a model after backpropagation
+     */
+    void update_weights();
 };
 
 #endif

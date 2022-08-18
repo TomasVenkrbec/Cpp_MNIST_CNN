@@ -8,7 +8,7 @@
 #include "layers/flatten.hpp"
 #include "layers/softmax.hpp"
 #include "losses/categoricalcrossentropy.hpp"
-#include "optimizers/adam.hpp"
+#include "optimizers/sgd.hpp"
 #include "activations/relu.hpp"
 #include "activations/sigmoid.hpp"
 #include "callback.hpp"
@@ -18,9 +18,12 @@
 using namespace std;
 
 int main() {
+    // CURRENT LIMITATIONS OF NETWORKS
+    // Fully connected networks need to start with Flatten layer -- maybe add Input layer?
+
     // Initialize network
     Model model;
-    model.add_layer(new Conv2D(3, 4, new ReLU())); // 28x28 - padding
+    /*model.add_layer(new Conv2D(3, 4, new ReLU())); // 28x28 - padding
     model.add_layer(new Conv2D(3, 8, new ReLU())); // 28x28 - padding
     model.add_layer(new AvgPool(2)); // Downsample to 14x14
     model.add_layer(new Conv2D(3, 16, new ReLU(), false)); // 12x12 - no padding
@@ -30,6 +33,12 @@ int main() {
     model.add_layer(new Flatten());
     model.add_layer(new Dense(128, new ReLU()));
     model.add_layer(new Dense(32, new ReLU()));
+    model.add_layer(new Dense(10, new Sigmoid()));
+    model.add_layer(new Softmax());*/
+
+    model.add_layer(new Flatten());
+    model.add_layer(new Dense(64, new ReLU()));
+    model.add_layer(new Dense(64, new ReLU()));
     model.add_layer(new Dense(10, new Sigmoid()));
     model.add_layer(new Softmax());
     
@@ -41,8 +50,8 @@ int main() {
     Loss* loss = new CategoricalCrossentropy();
 
     // Initialize optimizer
-    float learning_rate = 0.001;
-    Optimizer* optimizer = new Adam(learning_rate);
+    float learning_rate = 0.01;
+    Optimizer* optimizer = new SGD(learning_rate);
 
     // Initialize callbacks
     vector<Callback*> callback_vector;
@@ -56,7 +65,7 @@ int main() {
     model.print_model();
 
     // Train network
-    unsigned int max_epochs = 3;
+    unsigned int max_epochs = 100;
     model.fit(max_epochs);
 
     return 0;

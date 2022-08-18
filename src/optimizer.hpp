@@ -14,6 +14,14 @@ public:
      * @brief Optimizer object constructor
      */
     Optimizer(float learning_rate);
+
+    /**
+     * @brief Call optimizer with given derivative to get the resulting step size
+     * 
+     * @param derivative Calculated derivative
+     * @return Step size
+     */
+    virtual float call(float derivative);
 };
 
 #endif

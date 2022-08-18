@@ -56,6 +56,7 @@ void Dense::initialize_neurons() {
         for (unsigned int j = 0; j < input_shape[0]; j++) { // Iterate over neurons from previous layer
             // Initialize weights and their derivatives - one for each neuron in previous layer
             this->neurons[i]->weights.push_back(this->initializer->call()); // Random number
+            this->neurons[i]->weights_g.push_back(0.0); // Default value
             this->trainable_weights_count++;
         }
 
