@@ -31,7 +31,7 @@ Matrix* Dense::process_channel(Matrix* data) {
 
     for (unsigned int i = 0; i < neurons.size(); i++) { // Iterate over all neurons
         float result = 0.0;
-        for(unsigned int j = 0; j < data->get_x_size(); j++) { // Iterate over all neurons from previous layer
+        for (unsigned int j = 0; j < data->get_x_size(); j++) { // Iterate over all neurons from previous layer
             result += neurons[i]->weights[j] * data->at(j, 0); // Multiply data by corresponding weight
         }
 

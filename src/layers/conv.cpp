@@ -72,8 +72,8 @@ Sample Conv2D::process_sample(Sample sample) {
         start_x = start_y = 0; // Start at beginning
     }
 
-    for(unsigned int i = 0; i < kernel_matrices.size(); i++) { // Iterate over CNN kernels
-        for(unsigned int j = 0; j < sample.size(); j++) { // Iterate over input channels
+    for (unsigned int i = 0; i < kernel_matrices.size(); i++) { // Iterate over CNN kernels
+        for (unsigned int j = 0; j < sample.size(); j++) { // Iterate over input channels
             for (int x = 0; x < this->output_shape[0]; x++) { // Iterate over input rows accordingly to pre-calculated output shape
                 for (int y = 0; y < this->output_shape[1]; y++) { // Iterate over input cols accordingly to pre-calculated output shape
                     float result = sample[j]->convolve(kernel_matrices[i], x + start_x, y + start_y); // Get result of convolution

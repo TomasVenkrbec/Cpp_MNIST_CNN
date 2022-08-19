@@ -1,5 +1,5 @@
 # Convolutional Neural Network for MNIST hand-written digit classification with pure C++
-An implementation of Convolutional Neural Network in C++, without the use of any external libraries, inspired by [Keras](https://keras.io/). The network is then used to classify hand-written numbers from [MNIST](http://yann.lecun.com/exdb/mnist/) dataset.
+An implementation of deep learning framework in C++, without the use of any external libraries, inspired by [Keras](https://keras.io/). The framework is then used to create convolutional neural network, which is used to classify hand-written numbers from [MNIST](http://yann.lecun.com/exdb/mnist/) dataset.
 
 ## Features
 As already mentioned, the project structure is inspired by Keras. Created framework is very modular, and all types of networks can be built very easily. The project is not limited to MNIST dataset only, and new datasets can be added in similar way, without interfering with other parts of project. There exists number of already implemented activations, callbacks, neuron initializers, layers, losses, optimizers and regularizers, allowing for multi-purpose network creation. Adding any new modules is also simple.
