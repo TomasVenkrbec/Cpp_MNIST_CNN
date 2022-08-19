@@ -154,41 +154,23 @@ void Model::backprop(Batch y_pred, Batch y_true) {
 
         // Calculate derivatives of weights and biases for all the layers
         while(cur_layer->get_prev_layer() != NULL) { // End at input layer
-            // Get neurons from previous layer
-            vector<Neuron*> prev_layer_neurons = cur_layer->get_prev_layer()->get_neurons();
+            // Calculate derivatives of neuron activation
+            cur_layer->add_activation_derivatives(i);
 
-            for (unsigned int j = 0; j < cur_layer_neurons.size(); j++) {
-                // Calculate derivatives of neuron activation
-                cur_layer_neurons[j]->derivative *= cur_layer->get_activation_derivative(cur_layer_neurons[j]->activation[i]);
+            // Calculate derivative for bias of neurons from current layer
+            cur_layer->add_bias_derivatives();
 
-                // Calculate derivative for bias of neurons from current layer
-                cur_layer_neurons[j]->bias_g += cur_layer_neurons[j]->derivative;
+            // Calculate derivatives for all weights of neurons from current layer
+            cur_layer->add_weight_derivatives(i);
+        
+            // Calculate activation derivatives for all neurons from previous layer
+            cur_layer->add_prev_layer_derivatives();
 
-                // Calculate derivatives for all weights of neurons from current layer
-                for (unsigned int k = 0; k < cur_layer_neurons[j]->weights.size(); k++) { // All weights from current neuron
-                    cur_layer_neurons[j]->weights_g[k] += prev_layer_neurons[k]->activation[i] * cur_layer_neurons[j]->derivative;
-                }
-            
-                // Calculate activation derivatives for all neurons from previous layer
-                if (cur_layer_neurons[j]->weights.size() == 0) { // If the neuron has no weights, just pass through
-                    if (cur_layer_neurons.size() == prev_layer_neurons.size()) { // Can work only for layers doing certain transformations
-                        prev_layer_neurons[j]->derivative = cur_layer_neurons[j]->derivative;
-                    }
-                }
-                else { // Neuron has weights
-                    // Activation derivative of neuron from previous layer depends on every neuron from the current layer
-                    for (unsigned int k = 0; k < prev_layer_neurons.size(); k++) { // For every neuron of previous layer
-                        prev_layer_neurons[k]->derivative += cur_layer_neurons[j]->weights[k] * cur_layer_neurons[j]->derivative;
-                    }
-                }
-
-                // Clear derivatives of current layer, as they were already used for calculation
-                cur_layer_neurons[j]->derivative = 0.0;
-            }
+            // Clear derivatives of current layer, as they were already used for calculation
+            cur_layer->clear_layer_derivatives();
 
             // Move one layer back
             cur_layer = cur_layer->get_prev_layer();
-            cur_layer_neurons = cur_layer->get_neurons();
         }
     }
 }

@@ -122,3 +122,50 @@ float Layer::get_activation_derivative(float activation) {
     cerr << "ERROR: Method not implemented in derived class" << endl;
     throw;   
 }
+
+void Layer::add_activation_derivatives(unsigned int sample_idx) {
+    for (unsigned int j = 0; j < this->neurons.size(); j++) {
+        this->neurons[j]->derivative *= this->get_activation_derivative(this->neurons[j]->activation[sample_idx]);
+    }
+}
+
+void Layer::add_bias_derivatives() {
+    for (unsigned int j = 0; j < this->neurons.size(); j++) {
+        this->neurons[j]->bias_g += this->neurons[j]->derivative;
+    }
+}
+
+void Layer::add_weight_derivatives(unsigned int sample_idx) {
+    for (unsigned int j = 0; j < this->neurons.size(); j++) {
+        for (unsigned int k = 0; k < this->neurons[j]->weights.size(); k++) { // All weights from current neuron
+            this->neurons[j]->weights_g[k] += this->prev_layer->neurons[k]->activation[sample_idx] * this->neurons[j]->derivative;
+        }
+    }
+}
+
+void Layer::add_prev_layer_derivatives() {
+    for (unsigned int j = 0; j < this->neurons.size(); j++) {
+        if (this->neurons[j]->weights.size() == 0) { // If the neuron has no weights, just pass through
+            if (this->neurons.size() == this->prev_layer->neurons.size()) { // Can work only for layers doing certain transformations
+                this->prev_layer->neurons[j]->derivative = this->neurons[j]->derivative;
+            }
+            else {
+                // Needs to be implemented in derived class
+                cerr << "ERROR: Method not implemented in derived class" << endl;
+                throw;   
+            }
+        }
+        else { // Neuron has weights
+            // Activation derivative of neuron from previous layer depends on every neuron from the current layer
+            for (unsigned int k = 0; k < this->prev_layer->neurons.size(); k++) { // For every neuron of previous layer
+                this->prev_layer->neurons[k]->derivative += this->neurons[j]->weights[k] * this->neurons[j]->derivative;
+            }
+        }
+    }
+}
+
+void Layer::clear_layer_derivatives() {
+    for (unsigned int j = 0; j < this->neurons.size(); j++) {
+        this->neurons[j]->derivative = 0.0;
+    }
+}
