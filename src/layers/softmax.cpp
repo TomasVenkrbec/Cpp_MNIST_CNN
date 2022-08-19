@@ -43,5 +43,5 @@ void Softmax::initialize_neurons() {
 }
 
 float Softmax::get_activation_derivative(float activation) {
-    return activation; // Since the layer in current form does only scaling, result depends only on activation
+    return 1.0; // Since the layer in current form does only scaling, result depends only on activation
 }

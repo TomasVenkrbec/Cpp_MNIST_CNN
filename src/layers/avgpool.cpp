@@ -57,5 +57,5 @@ void AvgPool::initialize_neurons() {
 }
 
 float AvgPool::get_activation_derivative(float activation) {
-    return activation; 
+    return 1.0; 
 }

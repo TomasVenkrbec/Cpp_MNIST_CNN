@@ -47,7 +47,8 @@ int main() {
     dataset->batch_size = 32;
 
     // Initialize loss function
-    Loss* loss = new CategoricalCrossentropy();
+    unsigned int moving_average_samples = 100;
+    Loss* loss = new CategoricalCrossentropy(moving_average_samples);
 
     // Initialize optimizer
     float learning_rate = 0.01;
@@ -55,7 +56,6 @@ int main() {
 
     // Initialize callbacks
     vector<Callback*> callback_vector;
-    unsigned int moving_average_samples = 100;
     callback_vector.push_back(new Accuracy(moving_average_samples));
 
     // Compile the model

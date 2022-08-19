@@ -15,13 +15,14 @@ CategoricalCrossentropy::CategoricalCrossentropy(unsigned int moving_average_sam
 
 void CategoricalCrossentropy::call(LabelsOneHot y_pred, LabelsOneHot y_true) {
     float total_loss = 0.0;
+    float eps = 1e-8;
     this->loss_values.clear(); // Clear vector of losses
 
     for (unsigned int i = 0; i < y_pred.size(); i++) { // Iterate over samples
         float sample_loss = 0.0;
         // Cross-entropy = -sum(y_true * log(y_pred))
         for (unsigned int j = 0; j < y_pred[i][0]->get_x_size(); j++) { // Number of rows in first channel of data (there shouldn't be any more channels) 
-            sample_loss += y_true[i][0]->at(j, 0) * log2(y_pred[i][0]->at(j, 0)); // j-th row - individual probabilities, first column (there shouldn't be more)
+            sample_loss += y_true[i][0]->at(j, 0) * log2(y_pred[i][0]->at(j, 0) + eps); // j-th row - individual probabilities, first column (there shouldn't be more)
         }
         sample_loss = -sample_loss; // Take negative to get positive final value
         total_loss += sample_loss; // Add to total

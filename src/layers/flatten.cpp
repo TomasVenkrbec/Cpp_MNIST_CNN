@@ -59,5 +59,5 @@ void Flatten::initialize_neurons() {
 }
 
 float Flatten::get_activation_derivative(float activation) {
-    return activation; // Since input is only rescaled, the derivative doesn't change
+    return 1.0; // Since input is only rescaled, the derivative doesn't change
 }
