@@ -9,6 +9,7 @@
 #include "layers/softmax.hpp"
 #include "losses/categoricalcrossentropy.hpp"
 #include "optimizers/sgd.hpp"
+#include "regularizers/l2.hpp"
 #include "activations/relu.hpp"
 #include "activations/sigmoid.hpp"
 #include "callback.hpp"
@@ -54,12 +55,17 @@ int main() {
     float learning_rate = 0.01;
     Optimizer* optimizer = new SGD(learning_rate);
 
+    // Initialize regularizer
+    float reg_factor_weights = 1e-4;
+    float reg_factor_bias = 1e-4;
+    Regularizer* regularizer = new L2(reg_factor_weights, reg_factor_bias);
+
     // Initialize callbacks
     vector<Callback*> callback_vector;
     callback_vector.push_back(new Accuracy(moving_average_samples));
 
     // Compile the model
-    model.compile(dataset, loss, optimizer, callback_vector);
+    model.compile(dataset, loss, optimizer, regularizer, callback_vector);
 
     // Print network
     model.print_model();

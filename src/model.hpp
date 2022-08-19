@@ -9,6 +9,7 @@
 #include "loss.hpp"
 #include "callback.hpp"
 #include "matrix.hpp"
+#include "regularizer.hpp"
 
 class Model {
 private:
@@ -18,6 +19,7 @@ private:
     DatasetLoader* dataset;
     Optimizer* optimizer;
     Loss* loss;
+    Regularizer* regularizer;
     std::vector<Callback*> callbacks;
 
 public:
@@ -46,9 +48,10 @@ public:
      * @param dataset DatasetLoader object for loaded dataset
      * @param loss Loss object
      * @param optimizer Optimizer object
+     * @param regularizer Regularizer object
      * @param callbacks Vector of callbacks
      */
-    void compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, std::vector<Callback*> callbacks);
+    void compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, Regularizer* regularizer, std::vector<Callback*> callbacks);
 
     /**
      * @brief Train the model for given number of epochs

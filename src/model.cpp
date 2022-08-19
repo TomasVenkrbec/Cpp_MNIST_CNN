@@ -7,6 +7,7 @@
 #include "layer.hpp"
 #include "callback.hpp"
 #include "utils.hpp"
+#include "regularizer.hpp"
 
 using namespace std;
 
@@ -56,10 +57,11 @@ void Model::print_model() {
     cout << "Total number of trainable weights: " << trainable_weights_count << endl;
 }
 
-void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, vector<Callback*> callbacks) {
+void Model::compile(DatasetLoader* dataset, Loss* loss, Optimizer* optimizer, Regularizer* regularizer, vector<Callback*> callbacks) {
     this->dataset = dataset;
     this->loss = loss;
     this->optimizer = optimizer;
+    this->regularizer = regularizer;
     this->callbacks = callbacks;
 
     // Setup all layers to have their correct inputs and outputs
@@ -89,6 +91,7 @@ void Model::reset_callbacks() {
     for (auto callback: this->callbacks) {
         callback->reset();
     }
+    loss->reset();
 }
 
 Batch Model::forward_pass(Batch data) {
@@ -107,14 +110,22 @@ void Model::update_weights() {
     while (cur_layer != NULL) {
         vector<Neuron*> cur_layer_neurons = cur_layer->get_neurons();
         for (unsigned int i = 0; i < cur_layer_neurons.size(); i++) { // All neurons from current layer
+            // Calculate regularization factors, if specified
+            float bias_reg_factor = 0.0;
+            float weights_reg_factor = 0.0;
+            if (this->regularizer != NULL) {
+                bias_reg_factor = this->regularizer->get_bias_penalty(cur_layer);
+                weights_reg_factor = this->regularizer->get_weight_penalty(cur_layer);
+            }
+
             // Update bias
-            cur_layer_neurons[i]->bias += this->optimizer->call(cur_layer_neurons[i]->bias_g / this->dataset->batch_size);
+            cur_layer_neurons[i]->bias += this->optimizer->call((cur_layer_neurons[i]->bias_g + bias_reg_factor) / this->dataset->batch_size);
             // Clear derivative
             cur_layer_neurons[i]->bias_g = 0.0;
 
             // Update weights
             for (unsigned int j = 0; j < cur_layer_neurons[i]->weights.size(); j++) { // All weights from current neuron
-                cur_layer_neurons[i]->weights[j] += this->optimizer->call(cur_layer_neurons[i]->weights_g[j] / this->dataset->batch_size);
+                cur_layer_neurons[i]->weights[j] += this->optimizer->call((cur_layer_neurons[i]->weights_g[j] + weights_reg_factor) / this->dataset->batch_size);
                 // Clear derivative
                 cur_layer_neurons[i]->weights_g[j] = 0.0;
             }
