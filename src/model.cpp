@@ -153,7 +153,7 @@ void Model::backprop(Batch y_pred, Batch y_true) {
         }
 
         // Calculate derivatives of weights and biases for all the layers
-        while(cur_layer->get_prev_layer() != NULL) { // End at input layer
+        while (cur_layer->get_prev_layer() != NULL) { // End at input layer
             // Calculate derivatives of neuron activation
             cur_layer->add_activation_derivatives(i);
 

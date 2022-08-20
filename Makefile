@@ -11,6 +11,7 @@ src/layers/dense.cpp \
 src/layers/avgpool.cpp \
 src/layers/flatten.cpp \
 src/layers/softmax.cpp \
+src/layers/input.cpp \
 \
 src/loss.cpp \
 src/losses/categoricalcrossentropy.cpp \

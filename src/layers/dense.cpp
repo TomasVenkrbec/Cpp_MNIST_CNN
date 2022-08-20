@@ -14,7 +14,6 @@ Dense::Dense(unsigned int neuron_count, Activation* activation, Initializer* ini
     this->name = "Dense";
     this->activation = activation;
     this->initializer = initializer;
-    this->process_by_channel = true;
 }
 
 void Dense::calculate_output_shape(unsigned int input_shape[3]) {
