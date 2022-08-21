@@ -19,10 +19,10 @@ public:
     float call(float u);
 
     /**
-     * @brief Get the derivation of relu function wrt given activation
+     * @brief Get the derivation of ReLU function wrt given activation
      * 
      * @param activation Activation value
-     * @return Relu function derivative
+     * @return ReLU function derivative
      */
     float get_derivative(float activation);
 };

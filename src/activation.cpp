@@ -7,6 +7,10 @@ Activation::Activation() {
 
 }
 
+Activation::~Activation() {
+
+}
+
 float Activation::call(float u) {
     // Implemented inside derivated functions
     cerr << "ERROR: Method not implemented in derived class" << endl;

@@ -53,6 +53,11 @@ public:
     unsigned int batch_size;
 
     /**
+     * @brief DatasetLoader object destructor
+     */
+    ~DatasetLoader();
+
+    /**
      * @brief Get batch of training data
      * 
      * @return Vector of training data samples

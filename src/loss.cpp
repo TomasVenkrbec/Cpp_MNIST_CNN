@@ -10,6 +10,10 @@ Loss::Loss() : Callback() {
 
 }
 
+Loss::~Loss() {
+
+}
+
 void Loss::call(Batch y_pred, Batch y_true) {
     // Implemented inside derivated functions
     cerr << "ERROR: Method not implemented in derived class" << endl;

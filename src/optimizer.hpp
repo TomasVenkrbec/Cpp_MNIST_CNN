@@ -16,6 +16,11 @@ public:
     Optimizer(float learning_rate);
 
     /**
+     * @brief Optimizer object destructor
+     */
+    virtual ~Optimizer();
+
+    /**
      * @brief Call optimizer with given derivative to get the resulting step size
      * 
      * @param derivative Calculated derivative

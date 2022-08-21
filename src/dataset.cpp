@@ -17,6 +17,15 @@ using namespace std;
 #define MNIST_CHANNELS 1
 #define MNIST_MAX_LABEL 9
 
+DatasetLoader::~DatasetLoader() {
+    for (unsigned int i = 0; i < train_samples.size(); i++) {
+        delete train_samples[i];
+    }
+    for (unsigned int i = 0; i < val_samples.size(); i++) {
+        delete val_samples[i];
+    }
+}
+
 void DatasetLoader::add_train_sample(DataSample* sample) {
     this->train_samples.push_back(sample);
 }
@@ -91,7 +100,9 @@ DataSample::DataSample(unsigned int label, Sample data) {
 }
 
 DataSample::~DataSample() {
-
+    for(unsigned int i = 0; i < this->data.size(); i++) {
+        delete this->data[i];
+    }
 }
 
 DataSample* parse_csv_line(string line, unsigned int max_label, unsigned int x_size, unsigned int y_size, unsigned int channels) {
@@ -182,8 +193,7 @@ void DatasetLoader::load_mnist_dataset() {
     this->load_mnist_file("test"); // Load val data
 }
 
-DatasetLoader* get_dataset_loader(string dataset)
-{
+DatasetLoader* get_dataset_loader(string dataset) {
     if (dataset == "mnist") {
         cout << "Loading MNIST dataset." << endl;
 

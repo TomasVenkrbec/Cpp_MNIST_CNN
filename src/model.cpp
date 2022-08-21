@@ -94,6 +94,33 @@ void Model::reset_callbacks() {
     loss->reset();
 }
 
+void Model::clear() {
+    // Clear optimizer
+    delete this->optimizer;
+
+    // Clear loss
+    delete this->loss;
+
+    // Clear regularizer
+    delete this->regularizer;
+
+    // Clear callbacks
+    for (auto callback: callbacks) {
+        delete callback;
+    }
+
+    // Clear layers
+    Layer* cur_layer = this->input_layer;
+    while (cur_layer != NULL) {
+        Layer* next_layer = cur_layer->get_next_layer();
+        delete cur_layer;
+        cur_layer = next_layer;
+    }
+
+    // Clear dataset
+    delete this->dataset;
+}
+
 Batch Model::forward_pass(Batch data) {
     // Pass input data to input layer and results to next layers
     Layer* cur_layer = this->input_layer;
@@ -172,6 +199,9 @@ void Model::backprop(Batch y_pred, Batch y_true) {
             // Move one layer back
             cur_layer = cur_layer->get_prev_layer();
         }
+
+        // Clear derivatives of input layer too
+        cur_layer->clear_layer_derivatives();
     }
 }
 
@@ -223,6 +253,13 @@ void Model::step(vector<DataSample*> batch_data, bool is_training) {
             delete labels_gt[i][j];
             delete labels_pred[i][j];
         }
+    }
+
+    // Clear previous saved results of layer from memory
+    Layer* cur_layer = this->input_layer;
+    while (cur_layer != this->output_layer) {
+        cur_layer->clear_saved_samples();
+        cur_layer = cur_layer->get_next_layer();
     }
 }
 

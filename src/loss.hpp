@@ -19,6 +19,11 @@ public:
     Loss();
 
     /**
+     * @brief Loss object destructor
+     */
+    virtual ~Loss();
+
+    /**
      * @brief Calculate the loss value
      * 
      * @param y_pred Batch of predicted labels

@@ -13,6 +13,11 @@ public:
     Activation();
 
     /**
+     * @brief Activation object destructor
+     */
+    virtual ~Activation();
+
+    /**
      * @brief Perform activation calculation
      * 
      * @param u Value of neuron

@@ -103,6 +103,11 @@ public:
      * @brief Update all weights of a model after backpropagation
      */
     void update_weights();
+
+    /**
+     * @brief Clear all allocated data by a model
+     */
+    void clear();
 };
 
 #endif

@@ -13,6 +13,11 @@ public:
     Initializer();
 
     /**
+     * @brief Initializer object destructor
+     */
+    virtual ~Initializer();
+
+    /**
      * @brief Get random initialization value
      * 
      * @return Random initialization value

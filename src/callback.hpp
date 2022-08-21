@@ -22,6 +22,11 @@ public:
     Callback();
 
     /**
+     * @brief Callback object destructor
+     */
+    ~Callback();
+
+    /**
      * @brief Get the average value over entire epoch
      * 
      * @return Average value during epoch

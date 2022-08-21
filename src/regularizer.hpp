@@ -14,6 +14,11 @@ public:
     Regularizer();
 
     /**
+     * @brief Regularizer object destructor
+     */
+    virtual ~Regularizer();
+
+    /**
      * @brief Get regularization penalty for neuron weights
      * 
      * @param layer Layer to calculate regularization penalties for
