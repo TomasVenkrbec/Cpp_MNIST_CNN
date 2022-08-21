@@ -12,6 +12,7 @@
 class Layer {
 protected:
     std::vector<Neuron*> neurons;
+    Batch res_samples;
     Activation* activation = NULL;
     Initializer* initializer = NULL;
     Layer* prev_layer = NULL;
@@ -19,6 +20,8 @@ protected:
     unsigned int output_shape[3];
     unsigned int trainable_weights_count = 0;
     bool process_by_channel = true; // true - process image channel by channel, false - process image sample by sample
+    bool save_results = false; // true - save result of layer for backpropagation
+    std::vector<float> derivatives_vector; // Vector of derivatives from next layer, used when layer doesn't have the same number of neurons as number of incoming derivatives from next layer
 
 public:
     unsigned int batch_size;
@@ -63,6 +66,20 @@ public:
      * @return Activation function
      */
     Activation* get_activation();
+
+    /**
+     * @brief Get the saved result of layer
+     * 
+     * @return Batch of result samples
+     */
+    Batch get_saved_result();
+
+    /**
+     * @brief Add derivative to saved vector of derivatives from this layer
+     * 
+     * @param derivative Derivative value to be added
+     */
+    void add_layer_derivative(float derivative);
 
     /**
      * @brief Add the pointer to next layer
@@ -171,6 +188,11 @@ public:
      * @brief Clear derivative of layer, in preparation for next sample calculation
      */
     virtual void clear_layer_derivatives();
+
+    /**
+     * @brief Clear saved samples of layer
+     */
+    virtual void clear_saved_samples();
 
 };
 

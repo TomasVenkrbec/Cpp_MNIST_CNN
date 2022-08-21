@@ -9,7 +9,7 @@ using namespace std;
 AvgPool::AvgPool(unsigned int kernel_size) : Layer(0) {
     this->kernel_size = kernel_size;
     this->name = "AvgPool";
-    this->process_by_channel = true;
+    this->save_results = true;
 }
 
 void AvgPool::calculate_output_shape(unsigned int input_shape[3]) {
@@ -35,13 +35,15 @@ Matrix* AvgPool::process_channel(Matrix* data) {
     // Create averaging mask (kernel)
     Matrix *kernel = new Matrix(this->kernel_size, this->kernel_size);
 
-    for (int i = 0; i < data->get_x_size(); i += this->kernel_size) { // Move kernel over rows from data
-        for (int j = 0; j < data->get_y_size(); j += this->kernel_size) { // Move kernel over cols from data
+    for (unsigned int i = 0; i < data->get_x_size(); i += this->kernel_size) { // Move kernel over rows from data
+        for (unsigned int j = 0; j < data->get_y_size(); j += this->kernel_size) { // Move kernel over cols from data
             float result = data->get_avg(kernel, i, j); // Get average in masked area
             result_matrix->set_matrix(i / this->kernel_size, j / this->kernel_size, result); // Save the average to corresponding position
-            this->neurons[i * data->get_x_size() + j]->activation.push_back(result);
         }
     }
+
+    // Clear allocated memory
+    delete kernel;
 
     return result_matrix;
 }
@@ -58,4 +60,24 @@ void AvgPool::initialize_neurons() {
 
 float AvgPool::get_activation_derivative(float activation) {
     return 1.0; 
+}
+
+void AvgPool::add_activation_derivatives(unsigned int sample_idx) {
+    // Derivatives from last layer remain unchanged
+}
+
+void AvgPool::add_prev_layer_derivatives() {
+    for (unsigned int i = 0; i < this->neurons.size(); i++) { // For every derivative
+        for (unsigned int x = 0; x < this->kernel_size; x++) { // Iterate over kernel rows
+            for (unsigned int y = 0; y < this->kernel_size; y++) { // Iterate over kernel cols
+                // Each activation contributed to final activation the same, so save the same derivative multiple times
+                if (this->derivatives_vector.size() == 0) { // Derivatives were saved to neurons
+                    this->prev_layer->add_layer_derivative(this->neurons[i]->derivative / (this->kernel_size * this->kernel_size));
+                }
+                else { // Derivatives were saved to vector
+                    this->prev_layer->add_layer_derivative(this->derivatives_vector[i] / (this->kernel_size * this->kernel_size));
+                }
+            }
+        }
+    }
 }

@@ -1,6 +1,7 @@
 #ifndef CONVLAYER_H
 #define CONVLAYER_H
 
+#include <vector>
 #include "../aliases.hpp"
 #include "../layer.hpp"
 #include "../matrix.hpp"
@@ -53,6 +54,46 @@ public:
      * @return Activation derivative
      */
     float get_activation_derivative(float activation);
+
+    /**
+     * @brief Calculate and add derivatives of activation function (assuming the rest of derivative chain is already calculated)
+     * 
+     * @param sample_idx Index of sample from batch
+     */
+    void add_activation_derivatives(unsigned int sample_idx);
+
+    /**
+     * @brief Calculate and add derivatives of biases
+     */
+    void add_bias_derivatives();
+
+    /**
+     * @brief Calculate and add derivatives of weights
+     * 
+     * @param sample_idx Index of sample from batch
+     */
+    void add_weight_derivatives(unsigned int sample_idx);
+
+    /**
+     * @brief Calculate and add derivatives of all neuron activations from previous layer 
+     */
+    void add_prev_layer_derivatives();
+
+    /**
+     * @brief Get the derivatives for kernel with given index
+     * 
+     * @param kernel_idx Index of kernel
+     * @return Matrix of derivatives corresponding to given kernel
+     */
+    Matrix* get_derivatives_for_kernel(unsigned int kernel_idx);
+
+    /**
+     * @brief Get the neurons for kernel with given index
+     * 
+     * @param kernel_idx Index of kernel
+     * @return Vector of neurons corresponding to given kernel
+     */
+    std::vector<Neuron*> get_neurons_for_kernel(unsigned int kernel_idx);
 };
 
 #endif

@@ -42,6 +42,18 @@ public:
      * @return Activation derivative
      */
     float get_activation_derivative(float activation);
+
+    /**
+     * @brief Calculate and add derivatives of activation function (assuming the rest of derivative chain is already calculated)
+     * 
+     * @param sample_idx Index of sample from batch
+     */
+    void add_activation_derivatives(unsigned int sample_idx);
+
+    /**
+     * @brief Calculate and add derivatives of all neuron activations from previous layer 
+     */
+    void add_prev_layer_derivatives();
 };
 
 #endif
