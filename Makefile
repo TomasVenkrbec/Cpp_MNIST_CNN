@@ -25,6 +25,7 @@ src/regularizers/l2.cpp \
 \
 src/activation.cpp \
 src/activations/relu.cpp \
+src/activations/leakyrelu.cpp \
 src/activations/sigmoid.cpp \
 \
 src/callback.cpp \
